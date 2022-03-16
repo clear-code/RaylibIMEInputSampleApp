@@ -27,4 +27,7 @@ unsigned int GetInputCharNum();
 //入力された文字を取得する
 void GetInputChar(wchar_t* input_text);
 
+unsigned int GetPreeditCharNum();
+void GetPreeditChar(wchar_t* input_text);
+
 #endif /* CheckCharInput_h */

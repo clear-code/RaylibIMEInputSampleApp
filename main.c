@@ -29,8 +29,8 @@ int main(void)
     const int screenHeight = 450;
 
     InitWindow(screenWidth, screenHeight, "raylib [text] example - font loading");
-    
-    char text[] = "文字表示テスト";
+    // ToggleFullscreen();
+    SetPreeditCursorPosition(10, 20, 0);
 
     FreeTypeManager ftManager;
     FreeTypeManager_Initializ(&ftManager, "./resources/GenShinGothic-Regular.ttf", screenWidth, screenHeight, 16);
@@ -39,13 +39,17 @@ int main(void)
     //--------------------------------------------------------------------------------------
     
     wchar_t wText[1024];
+    wchar_t preeditText[1024];
     unsigned int wText_len = 0;
     
-    FreeTypeManager_ConvertUtf8toUtf32(wText, text);
+    FreeTypeManager_ConvertUtf8toUtf32(wText, "");
+    FreeTypeManager_ConvertUtf8toUtf32(preeditText, "");
     Texture2D texture = FreeTypeManager_OutputRaylibImage(&ftManager, wText);
+    Texture2D texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, preeditText);
     wText_len = wcslen(wText);
 
     bool change_text = false;
+    bool change_preedit = false;
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
@@ -63,12 +67,30 @@ int main(void)
             
             change_text = true;
         }
-        
+
+        input_num = GetPreeditCharNum();
+        if(input_num > 0)
+        {
+            preeditText[0] = '\0';
+            wchar_t text[64];
+            GetPreeditChar(text);
+            
+            wcscat(preeditText, text);
+            
+            change_preedit = true;
+        }
+
         //入力された文字から画像を作成
         if(change_text == true)
         {
             texture = FreeTypeManager_OutputRaylibImage(&ftManager, wText);
             change_text = false;
+        }
+
+        if(change_preedit == true)
+        {
+            texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, preeditText);
+            change_preedit = false;
         }
         
         //----------------------------------------------------------------------------------
@@ -80,7 +102,8 @@ int main(void)
         
             ClearBackground(RAYWHITE);
         
-        DrawTexture(texture, 0,0, WHITE);
+        DrawTexture(texturePreedit, 0,0, WHITE);
+        DrawTexture(texture, 0,20, WHITE);
 
         DrawFPS(700, 10);
         

@@ -25,6 +25,9 @@
 static wchar_t s_InputTextArray[INPUT_TEXTARRAY_MAX];
 static unsigned int s_InputTextNum = 0;
 
+static wchar_t s_PreeditArray[INPUT_TEXTARRAY_MAX];
+static unsigned int s_PreeditNum = 0;
+
 //入力があるかどうか、入力があった場合入力された文字の長さを返す
 unsigned int GetInputCharNum()
 {
@@ -49,3 +52,27 @@ void GetInputChar(wchar_t* input_text)
 {
     memcpy(input_text, s_InputTextArray, sizeof(wchar_t) * (s_InputTextNum + 1));
 }
+
+unsigned int GetPreeditCharNum()
+{
+    wchar_t buf[64];
+    buf[0] = GetPreeditPressed();
+    int input_num = 0;
+    while(buf[input_num] != 0)
+    {
+        input_num += 1;
+        buf[input_num] = GetPreeditPressed();
+    }
+    buf[input_num + 1] = U'\0';
+
+    s_PreeditNum = input_num;
+    memcpy(s_PreeditArray, buf, sizeof(wchar_t) * (s_PreeditNum + 1));
+    
+    return s_PreeditNum;
+}
+
+void GetPreeditChar(wchar_t* input_text)
+{
+    memcpy(input_text, s_PreeditArray, sizeof(wchar_t) * (s_PreeditNum + 1));
+}
+
