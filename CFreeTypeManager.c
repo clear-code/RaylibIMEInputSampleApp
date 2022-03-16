@@ -35,12 +35,12 @@ bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filename,
     int error = FT_Init_FreeType(&ft_manager->m_ftLibrary);
     if (error != 0)
     {
-        //printf("%d", error);
+        printf("FT_Init_FreeType failed with error: %d\n", error);
         return false;
     }
     else
     {
-        //printf("FT_Init_FreeType success");
+        printf("FT_Init_FreeType success\n");
     }
 
     //読み込んだフォントからface作成
@@ -48,12 +48,12 @@ bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filename,
 
     if (error != 0)
     {
-        //printf("%d", error);
+        printf("FT_New_Face failed with error: %d\n", error);
         return false;
     }
     else
     {
-        //printf("FT_New_Face success");
+        printf("FT_New_Face success\n");
     }
 
     //生成するグリフ用のフォント設定
@@ -61,12 +61,12 @@ bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filename,
 
     if (error != 0)
     {
-        //printf("%d", error);
+        printf("FT_Set_Char_Size failed with error: %d\n", error);
         return false;
     }
     else
     {
-        //printf("FT_Set_Char_Size success");
+        printf("FT_Set_Char_Size success\n");
     }
 
     unsigned int buffer_size = ft_manager->m_TextureWidth * ft_manager->m_TextureHeight * 4;

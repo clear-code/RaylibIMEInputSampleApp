@@ -32,7 +32,11 @@ int main(void)
     SetPreeditCursorPosition(10, 20, 0);
 
     FreeTypeManager ftManager;
-    FreeTypeManager_Initializ(&ftManager, "./resources/GenShinGothic-Regular.ttf", screenWidth, screenHeight, 16);
+    bool has_succeeded = FreeTypeManager_Initializ(&ftManager, "/resources/GenShinGothic-Regular.ttf", screenWidth, screenHeight, 16);
+    if (!has_succeeded) {
+        printf("FreeTypeManager_Initializ failed. Can't start the app.\n");
+        return 1;
+    }
 
     SetTargetFPS(30);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
