@@ -2,13 +2,15 @@
 
 This is a sample application for Japanese input with [raylib](https://github.com/raysan5/raylib).
 
+![image](doc/image.png)
+
 # How to build and run
 
 ## Windows
 
 1. Install the following tools.
-  - cmake: https://cmake.org/download/
-  - mingw32-make: https://sourceforge.net/projects/mingw-w64/files/
+    - cmake: https://cmake.org/download/
+    - mingw32-make: https://sourceforge.net/projects/mingw-w64/files/
 2. Build raylib: https://github.com/raysan5/raylib
 
 ```console
@@ -25,8 +27,8 @@ $ git clone https://github.com/ubawurinna/freetype-windows-binaries.git
 ```
 
 4. Edit `build_windows.ps1`
-  - Set the installed dir path of raylib to `$raylibBinDir`
-  - Set the cloned dir path of freetype-windows-binaries to `$freeTypeWindowsBinDir`
+    - Set the installed dir path of raylib to `$raylibBinDir`
+    - Set the cloned dir path of freetype-windows-binaries to `$freeTypeWindowsBinDir`
 5. Run `build_windows.ps1` by Windows PowerShell
 6. Open `bin` dir newly created, and run `RaylibIMEInputSampleApp.exe`
 
@@ -42,8 +44,8 @@ TODO
 
 ## This Program
 
-Copyright (C) 2022 鏡原 尚 <kagamihara@sena-networks.co.jp>
-Copyright (C) 2022 Daijiro Fukuda <fukuda@clear-code.com>
+Copyright (C) 2022 鏡原 尚 <kagamihara@sena-networks.co.jp>  
+Copyright (C) 2022 Daijiro Fukuda <fukuda@clear-code.com>  
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
