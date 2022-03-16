@@ -33,7 +33,7 @@ int main(void)
     char text[] = "文字表示テスト";
 
     FreeTypeManager ftManager;
-    FreeTypeManager_Initializ(&ftManager, "/resources/GenShinGothic-Regular.ttf", screenWidth, screenHeight, 16);
+    FreeTypeManager_Initializ(&ftManager, "./resources/GenShinGothic-Regular.ttf", screenWidth, screenHeight, 16);
     
     SetTargetFPS(30);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
