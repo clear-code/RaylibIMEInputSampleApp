@@ -50,7 +50,7 @@ typedef struct FreeTypeManager
 }FreeTypeManager;
 
 //FreeTypeManagerの初期化
-bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filename, int width, int height, font_size);
+bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filename, int width, int height, int font_size);
 
 //マルチバイト文字からワイド文字に変換
 int FreeTypeManager_ConvertUtf8toUtf32(wchar_t* out_wchar, const char* conv_char);

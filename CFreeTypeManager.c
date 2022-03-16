@@ -18,7 +18,7 @@
 #include "CFreeTypeManager.h"
 
 
-bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filename,  int width, int height, font_size)
+bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filename,  int width, int height, int font_size)
 {
     
     setlocale(LC_CTYPE, "ja_JP");
