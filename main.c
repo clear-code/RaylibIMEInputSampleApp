@@ -22,7 +22,6 @@
 
 int main(void)
 {
-    
     // Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
@@ -34,14 +33,14 @@ int main(void)
 
     FreeTypeManager ftManager;
     FreeTypeManager_Initializ(&ftManager, "./resources/GenShinGothic-Regular.ttf", screenWidth, screenHeight, 16);
-    
+
     SetTargetFPS(30);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
-    
+
     wchar_t wText[1024];
     wchar_t preeditText[1024];
     unsigned int wText_len = 0;
-    
+
     FreeTypeManager_ConvertUtf8toUtf32(wText, "");
     FreeTypeManager_ConvertUtf8toUtf32(preeditText, "");
     Texture2D texture = FreeTypeManager_OutputRaylibImage(&ftManager, wText);
@@ -55,58 +54,58 @@ int main(void)
     {
         // Update
         //----------------------------------------------------------------------------------
-        
+
         //文字入力確認
         unsigned int input_num = GetInputCharNum();
-        if(input_num > 0)
+        if (input_num > 0)
         {
             wchar_t text[64];
             GetInputChar(text);
-            
+
             wcscat(wText, text);
-            
+
             change_text = true;
         }
 
         input_num = GetPreeditCharNum();
-        if(input_num > 0)
+        if (input_num > 0)
         {
             preeditText[0] = '\0';
             wchar_t text[64];
             GetPreeditChar(text);
-            
+
             wcscat(preeditText, text);
-            
+
             change_preedit = true;
         }
 
         //入力された文字から画像を作成
-        if(change_text == true)
+        if (change_text == true)
         {
             texture = FreeTypeManager_OutputRaylibImage(&ftManager, wText);
             change_text = false;
         }
 
-        if(change_preedit == true)
+        if (change_preedit == true)
         {
             texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, preeditText);
             change_preedit = false;
         }
-        
+
         //----------------------------------------------------------------------------------
-        
+
 
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
-        
-            ClearBackground(RAYWHITE);
-        
-        DrawTexture(texturePreedit, 0,0, WHITE);
-        DrawTexture(texture, 0,20, WHITE);
+
+        ClearBackground(RAYWHITE);
+
+        DrawTexture(texturePreedit, 0, 0, WHITE);
+        DrawTexture(texture, 0, 20, WHITE);
 
         DrawFPS(700, 10);
-        
+
         EndDrawing();
         //----------------------------------------------------------------------------------
     }

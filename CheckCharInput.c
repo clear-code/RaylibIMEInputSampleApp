@@ -34,7 +34,7 @@ unsigned int GetInputCharNum()
     wchar_t buf[64];
     buf[0] = GetCharPressed();
     int input_num = 0;
-    while(buf[input_num] != 0)
+    while (buf[input_num] != 0)
     {
         input_num += 1;
         buf[input_num] = GetCharPressed();
@@ -43,7 +43,7 @@ unsigned int GetInputCharNum()
 
     s_InputTextNum = input_num;
     memcpy(s_InputTextArray, buf, sizeof(wchar_t) * (s_InputTextNum + 1));
-    
+
     return s_InputTextNum;
 }
 
@@ -58,7 +58,7 @@ unsigned int GetPreeditCharNum()
     wchar_t buf[64];
     buf[0] = GetPreeditPressed();
     int input_num = 0;
-    while(buf[input_num] != 0)
+    while (buf[input_num] != 0)
     {
         input_num += 1;
         buf[input_num] = GetPreeditPressed();
@@ -67,7 +67,7 @@ unsigned int GetPreeditCharNum()
 
     s_PreeditNum = input_num;
     memcpy(s_PreeditArray, buf, sizeof(wchar_t) * (s_PreeditNum + 1));
-    
+
     return s_PreeditNum;
 }
 

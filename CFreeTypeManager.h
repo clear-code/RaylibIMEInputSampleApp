@@ -33,21 +33,20 @@ typedef struct FreeTypeManager
 {
     FT_Library m_ftLibrary;
     FT_Face m_ftFace;
-    
+
     //bitmapグリフ出力用の設定と渡す用のデータ
     Image m_ImageConf;
-    
+
     //画像バッファ（初期化用）
     unsigned char* m_InitData;
-    
+
     //グリフ設定
     int m_FontSize;     //フォントサイズ
-    
+
     //ウィンドウサイズ
     int m_TextureWidth;
     int m_TextureHeight;
-    
-}FreeTypeManager;
+} FreeTypeManager;
 
 //FreeTypeManagerの初期化
 bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filename, int width, int height, int font_size);
@@ -63,6 +62,5 @@ void FreeTypeManager_SetFontSize(FreeTypeManager* ft_manager, int font_size);
 
 //テクスチャサイズ設定
 void FreeTypeManager_SetTextureSize(FreeTypeManager* ft_manager, int width, int height);
-
 
 #endif /* CFreeTypeManager_h */
