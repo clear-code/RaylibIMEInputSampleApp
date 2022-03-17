@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <wchar.h>
 
 //入力があるかどうか、入力があった場合入力された文字の長さを返す
 unsigned int GetInputCharNum();

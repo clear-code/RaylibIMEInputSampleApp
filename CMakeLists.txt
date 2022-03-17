@@ -19,52 +19,78 @@ cmake_minimum_required(VERSION 3.0)
 
 project(RaylibIMEInputSampleApp C)
 
-# TODO support Unix and MacOS.
+# TODO support MacOS.
 # As or MacOS, there is a possibility to manage with xcode.
-if(NOT WIN32)
-  message(FATAL_ERROR "For only Windows now.")
+if(APPLE)
+  message(FATAL_ERROR "Not support MacOS now.")
 endif()
 
-# command line arguments
-set(RAYLIB "" CACHE STRING "The path of raylib binaries")
-set(FREETYPE "" CACHE STRING "The path of freetype-windows-binaries")
-
-if(NOT EXISTS ${RAYLIB})
-  message(FATAL_ERROR "Not found raylib path: ${RAYLIB}. Must specify `RAYLIB` argument correctly.")
-endif()
-if(NOT EXISTS ${FREETYPE})
-  message(FATAL_ERROR "Not found freetype path: ${FREETYPE}. Must specify `FREETYPE` argument correctly.")
+if(UNIX)
+  find_package(raylib REQUIRED)
+  find_package(Freetype REQUIRED)
 endif()
 
-# local variables
-set(RAYLIB_INCLUDE_DIR "${RAYLIB}/include")
-set(RAYLIB_LIBRARY "${RAYLIB}/lib/libraylib.a")
-set(FREETYPE_INCLUDE_DIR "${FREETYPE}/include")
-set(FREETYPE_LIBRARY "${FREETYPE}/release dll/win64/freetype.dll")
-set(INSTALL_PATH "${CMAKE_INSTALL_PREFIX}/")
-list(APPEND DEPENDENCIES "./resources")
-list(APPEND DEPENDENCIES ${FREETYPE_LIBRARY})
 
 add_library(CheckCharInput CheckCharInput.c)
-target_include_directories(CheckCharInput PRIVATE ${RAYLIB_INCLUDE_DIR})
 list(APPEND LIBS CheckCharInput)
 
 add_library(CFreeTypeManager CFreeTypeManager.c)
-target_link_libraries(CFreeTypeManager PRIVATE ${FREETYPE_LIBRARY})
-target_include_directories(CFreeTypeManager PRIVATE ${FREETYPE_INCLUDE_DIR} ${RAYLIB_INCLUDE_DIR})
 list(APPEND LIBS CFreeTypeManager)
 
 add_executable(RaylibIMEInputSampleApp main.c)
 
-target_include_directories(RaylibIMEInputSampleApp PRIVATE ${FREETYPE_INCLUDE_DIR} ${RAYLIB_INCLUDE_DIR})
-list(APPEND LIBS ${RAYLIB_LIBRARY})
-list(APPEND LIBS winmm)
-list(APPEND LIBS imm32)
+set(INSTALL_PATH "${CMAKE_INSTALL_PREFIX}/")
+list(APPEND DEPENDENCIES "./resources")
+
+
+if(WIN32)
+  set(RAYLIB "" CACHE STRING "The path of raylib binaries")
+  if(NOT EXISTS ${RAYLIB})
+    message(FATAL_ERROR "Not found raylib path: ${RAYLIB}. Must specify `RAYLIB` argument correctly.")
+  endif()
+
+  set(FREETYPE "" CACHE STRING "The path of freetype-windows-binaries")
+  if(NOT EXISTS ${FREETYPE})
+    message(FATAL_ERROR "Not found freetype path: ${FREETYPE}. Must specify `FREETYPE` argument correctly.")
+  endif()
+
+  set(RAYLIB_INCLUDE_DIR "${RAYLIB}/include")
+  set(RAYLIB_LIBRARY "${RAYLIB}/lib/libraylib.a")
+  set(FREETYPE_INCLUDE_DIR "${FREETYPE}/include")
+  set(FREETYPE_LIBRARY "${FREETYPE}/release dll/win64/freetype.dll")
+
+  target_include_directories(CheckCharInput PRIVATE ${RAYLIB_INCLUDE_DIR})
+  target_link_libraries(CheckCharInput PRIVATE ${RAYLIB_LIBRARY})
+
+  target_include_directories(CFreeTypeManager PUBLIC ${RAYLIB_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR})
+  target_link_libraries(CFreeTypeManager PUBLIC ${RAYLIB_LIBRARY} ${FREETYPE_LIBRARY})
+
+  target_include_directories(RaylibIMEInputSampleApp PRIVATE ${RAYLIB_INCLUDE_DIR})
+
+  list(APPEND LIBS ${RAYLIB_LIBRARY})
+  list(APPEND LIBS winmm imm32)
+  list(APPEND DEPENDENCIES ${FREETYPE_LIBRARY})
+endif()
+
+
+if(UNIX)
+  target_link_libraries(CheckCharInput PRIVATE raylib)
+
+  target_include_directories(CFreeTypeManager PUBLIC ${FREETYPE_INCLUDE_DIRS})
+  target_link_libraries(CFreeTypeManager PUBLIC raylib freetype)
+
+  list(APPEND LIBS raylib freetype)
+  list(APPEND LIBS GL m pthread dl rt X11)
+endif()
+
+
 target_link_libraries(RaylibIMEInputSampleApp PRIVATE ${LIBS})
+
 
 install(TARGETS RaylibIMEInputSampleApp DESTINATION ${INSTALL_PATH})
 
-# copy dlls necessary to run the exe
+
+# copy files necessary to run the exe
 foreach(path ${DEPENDENCIES})
   file(COPY ${path} DESTINATION ${INSTALL_PATH})
 endforeach()

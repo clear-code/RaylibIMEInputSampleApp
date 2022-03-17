@@ -34,7 +34,30 @@ $ git clone https://github.com/ubawurinna/freetype-windows-binaries.git
 
 ## Ubuntu
 
-TODO
+1. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib.git
+    - Refer to: https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux
+
+```console
+$ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
+$ git clone --branch=better-ime-support https://github.com/clear-code/raylib.git
+$ cd raylib
+$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin -DBUILD_EXAMPLES=OFF
+$ make -C build -j$(nproc) install
+```
+
+2. Build and run this app
+
+```console
+$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin -DCMAKE_PREFIX_PATH={...}/raylib/bin
+$ make -C build -j$(nproc) install
+$ bin/RaylibIMEInputSampleApp
+```
+
+If `freetype` is not found, you may need `libfreetype6-dev` or `libfreetype-dev`.
+
+```console
+$ sudo apt install libfreetype6-dev
+```
 
 ## MacOS
 

@@ -19,6 +19,7 @@
 
 #include "CFreeTypeManager.h"
 #include "CheckCharInput.h"
+#include <wchar.h>
 
 int main(void)
 {
