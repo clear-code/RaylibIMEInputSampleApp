@@ -53,26 +53,26 @@ void GetInputChar(wchar_t* input_text)
     memcpy(input_text, s_InputTextArray, sizeof(wchar_t) * (s_InputTextNum + 1));
 }
 
-unsigned int GetPreeditCharNum()
-{
-    wchar_t buf[64];
-    buf[0] = GetPreeditPressed();
-    int input_num = 0;
-    while (buf[input_num] != 0)
-    {
-        input_num += 1;
-        buf[input_num] = GetPreeditPressed();
-    }
-    buf[input_num + 1] = U'\0';
+// unsigned int GetPreeditCharNum()
+// {
+//     wchar_t buf[64];
+//     buf[0] = GetPreeditPressed();
+//     int input_num = 0;
+//     while (buf[input_num] != 0)
+//     {
+//         input_num += 1;
+//         buf[input_num] = GetPreeditPressed();
+//     }
+//     buf[input_num + 1] = U'\0';
 
-    s_PreeditNum = input_num;
-    memcpy(s_PreeditArray, buf, sizeof(wchar_t) * (s_PreeditNum + 1));
+//     s_PreeditNum = input_num;
+//     memcpy(s_PreeditArray, buf, sizeof(wchar_t) * (s_PreeditNum + 1));
 
-    return s_PreeditNum;
-}
+//     return s_PreeditNum;
+// }
 
-void GetPreeditChar(wchar_t* input_text)
-{
-    memcpy(input_text, s_PreeditArray, sizeof(wchar_t) * (s_PreeditNum + 1));
-}
+// void GetPreeditChar(wchar_t* input_text)
+// {
+//     memcpy(input_text, s_PreeditArray, sizeof(wchar_t) * (s_PreeditNum + 1));
+// }
 

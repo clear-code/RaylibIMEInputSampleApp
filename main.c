@@ -30,7 +30,7 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "RaylibIMEInputSampleApp");
     // ToggleFullscreen();
-    SetPreeditCursorPosition(10, 20, 0);
+    // SetPreeditCursorPosition(10, 20, 0);
 
     FreeTypeManager ftManager;
     bool has_succeeded = FreeTypeManager_Initializ(&ftManager, "/resources/GenShinGothic-Regular.ttf", screenWidth, screenHeight, 16);
@@ -72,17 +72,17 @@ int main(void)
             change_text = true;
         }
 
-        input_num = GetPreeditCharNum();
-        if (input_num > 0)
-        {
-            preeditText[0] = '\0';
-            wchar_t text[64];
-            GetPreeditChar(text);
+        // input_num = GetPreeditCharNum();
+        // if (input_num > 0)
+        // {
+        //     preeditText[0] = '\0';
+        //     wchar_t text[64];
+        //     GetPreeditChar(text);
 
-            wcscat(preeditText, text);
+        //     wcscat(preeditText, text);
 
-            change_preedit = true;
-        }
+        //     change_preedit = true;
+        // }
 
         //入力された文字から画像を作成
         if (change_text == true)
