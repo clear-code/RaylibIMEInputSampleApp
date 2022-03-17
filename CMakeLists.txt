@@ -19,13 +19,8 @@ cmake_minimum_required(VERSION 3.0)
 
 project(RaylibIMEInputSampleApp C)
 
-# TODO support MacOS.
-# As or MacOS, there is a possibility to manage with xcode.
-if(APPLE)
-  message(FATAL_ERROR "Not support MacOS now.")
-endif()
 
-if(UNIX)
+if(NOT WIN32)
   find_package(raylib REQUIRED)
   find_package(Freetype REQUIRED)
 endif()
@@ -44,6 +39,8 @@ list(APPEND DEPENDENCIES "./resources")
 
 
 if(WIN32)
+  message("For Windows")
+
   set(RAYLIB "" CACHE STRING "The path of raylib binaries")
   if(NOT EXISTS ${RAYLIB})
     message(FATAL_ERROR "Not found raylib path: ${RAYLIB}. Must specify `RAYLIB` argument correctly.")
@@ -70,10 +67,25 @@ if(WIN32)
   list(APPEND LIBS ${RAYLIB_LIBRARY})
   list(APPEND LIBS winmm imm32)
   list(APPEND DEPENDENCIES ${FREETYPE_LIBRARY})
-endif()
+elseif(APPLE)
+  message("For MacOS")
 
+  target_link_libraries(CheckCharInput PRIVATE raylib)
 
-if(UNIX)
+  target_include_directories(CFreeTypeManager PUBLIC ${FREETYPE_INCLUDE_DIRS})
+  target_link_libraries(CFreeTypeManager PUBLIC raylib ${FREETYPE_LIBRARIES})
+
+  list(APPEND LIBS
+    raylib
+    ${FREETYPE_LIBRARIES}
+    "-framework Cocoa"
+    "-framework IOKit"
+    "-framework CoreFoundation"
+    "-framework OpenGL"
+  )
+elseif(UNIX)
+  message("For UNIX")
+
   target_link_libraries(CheckCharInput PRIVATE raylib)
 
   target_include_directories(CFreeTypeManager PUBLIC ${FREETYPE_INCLUDE_DIRS})

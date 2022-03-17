@@ -50,7 +50,8 @@ $ make -C build -j$(nproc) install
 ```console
 $ cmake -B build -DCMAKE_INSTALL_PREFIX=bin -DCMAKE_PREFIX_PATH={...}/raylib/bin
 $ make -C build -j$(nproc) install
-$ bin/RaylibIMEInputSampleApp
+$ cd bin
+$ ./RaylibIMEInputSampleApp
 ```
 
 If `freetype` is not found, you may need `libfreetype6-dev` or `libfreetype-dev`.
@@ -61,7 +62,31 @@ $ sudo apt install libfreetype6-dev
 
 ## MacOS
 
-TODO
+1. Install cmake and freetype.
+
+```console
+$ brew install cmake
+$ brew install freetype
+```
+
+2. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib.git
+
+```console
+$ git clone --branch=better-ime-support https://github.com/clear-code/raylib.git
+$ cd raylib
+$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin -DBUILD_EXAMPLES=OFF
+$ make -C build install
+```
+
+3. Build and run this app
+    - Currently impossible to build with the `better-ime-support` branch of raylib.
+
+```console
+$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin -DCMAKE_PREFIX_PATH={...}/raylib/bin
+$ make -C build install
+$ cd bin
+$ ./RaylibIMEInputSampleApp
+```
 
 # Licenses
 
