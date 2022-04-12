@@ -164,7 +164,7 @@ $ git clone --branch=better-ime-support git@github.com:clear-code/raylib.git
 $ cd raylib
 $ cmake -B build -DCMAKE_INSTALL_PREFIX=bin \
   -DUSE_EXTERNAL_GLFW=ON \
-  -DCMAKE_PREFIX_PATH={path of GLFW build in step-1}
+  -DCMAKE_PREFIX_PATH="{path of GLFW built in step-1}"
 $ make -C build -j$(nproc) install
 ```
 
@@ -176,7 +176,7 @@ $ make -C build -j$(nproc) install
 ```sh
 $ cmake -B build -DCMAKE_INSTALL_PREFIX=bin \
   -DUSE_EXTERNAL_GLFW=ON \
-  -DCMAKE_PREFIX_PATH="{path of GLFW build in step-1};{path of raylib build in step-2};"
+  -DCMAKE_PREFIX_PATH="{path of GLFW built in step-1};{path of raylib built in step-2};"
 $ make -C build -j$(nproc) install
 $ cd bin
 $ ./RaylibIMEInputSampleApp
@@ -216,6 +216,107 @@ $ cmake -B build -DCMAKE_INSTALL_PREFIX=bin -DCMAKE_PREFIX_PATH={...}/raylib/bin
 $ make -C build install
 $ cd bin
 $ ./RaylibIMEInputSampleApp
+```
+
+## Cross-compilation with CMake and MinGW
+
+The way to build and run Windows-exe from Ubuntu using external GLFW is as follows.
+
+Refer to https://www.glfw.org/docs/3.3/compile.html#compile_mingw_cross
+
+1. Prepare tools
+
+Install `mingw-w64` and `wine`.
+
+```sh
+$ sudo apt install mingw-w64 wine
+```
+
+Clone freetype binaries: https://github.com/ubawurinna/freetype-windows-binaries
+
+```sh
+$ git clone git@github.com:ubawurinna/freetype-windows-binaries.git
+```
+2. Clone and add some fixes to the forked GLFW in which we are developing IME support: https://github.com/clear-code/glfw/tree/3.4-2021-06-09+im-support
+
+Clone the repository.
+
+```sh
+$ git clone --branch=3.4-2021-06-09+im-support git@github.com:clear-code/glfw.git
+$ cd glfw
+```
+
+Add the following fix to `glfw3native.h` to avoid duplicated declaration errors.
+
+```diff
+--- a/include/GLFW/glfw3native.h
++++ b/include/GLFW/glfw3native.h
+@@ -90,7 +90,10 @@ extern "C" {
+   #undef APIENTRY
+   #undef GLFW_APIENTRY_DEFINED
+  #endif
+- #include <windows.h>
++ // #include <windows.h>
++ typedef void *PVOID;
++ typedef PVOID HANDLE;
++ typedef HANDLE HWND;
+```
+
+3. Build the GLFW
+    - Specify `CMAKE_TOOLCHAIN_FILE` as follows for cross-build
+
+```sh
+$ cmake -B build \
+  -DCMAKE_TOOLCHAIN_FILE=CMake/x86_64-w64-mingw32.cmake \
+  -DCMAKE_INSTALL_PREFIX=bin
+$ make -C build -j$(nproc) install
+```
+
+4. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib/tree/better-ime-support
+    - Specify the path of `x86_64-w64-mingw32.cmake` to `CMAKE_TOOLCHAIN_FILE`
+        - We can use the file in GLFW repo (the same file as step-3)
+        - Ex: `/test/glfw/CMake/x86_64-w64-mingw32.cmake`
+    - Set `USE_EXTERNAL_GLFW` `ON`
+    - Specify the path of GLFW built in step-1 to `CMAKE_PREFIX_PATH`
+        - Ex: `-DCMAKE_PREFIX_PATH=/test/glfw/bin`
+
+```sh
+$ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
+$ git clone --branch=better-ime-support git@github.com:clear-code/raylib.git
+$ cd raylib
+$ cmake -B build \
+  -DCMAKE_TOOLCHAIN_FILE="{path of GLFW repo}/CMake/x86_64-w64-mingw32.cmake" \
+  -DCMAKE_INSTALL_PREFIX=bin \
+  -DUSE_EXTERNAL_GLFW=ON \
+  -DCMAKE_PREFIX_PATH="{path of GLFW built in step-3}" \
+  -DBUILD_EXAMPLES=OFF
+$ make -C build -j$(nproc) install
+```
+
+5. Build and run this app
+    - Specify the path of `x86_64-w64-mingw32.cmake` to `CMAKE_TOOLCHAIN_FILE`
+        - We can use the file in GLFW repo (the same file as step-3)
+        - Ex: `/test/glfw/CMake/x86_64-w64-mingw32.cmake`
+    - Specify the path of raylib built in step-4 to `RAYLIB`
+        - Ex: `-DRAYLIB="/test/raylib/bin"`
+    - Specify the path of freetype to `FREETYPE`
+        - Ex: `-DFREETYPE="/test/freetype-windows-binaries"`
+    - Set `USE_EXTERNAL_GLFW` `ON`
+    - Specify the path of GLFW built in step-3 to `GLFW`
+        - Ex: `-DGLFW="/test/glfw/bin"`
+    - Use `wine` to run the exe
+
+```sh
+$ cmake -B build \
+  -DCMAKE_TOOLCHAIN_FILE="{path of GLFW repo}/CMake/x86_64-w64-mingw32.cmake" \
+  -DCMAKE_INSTALL_PREFIX=bin \
+  -DRAYLIB="{path of raylib built in step-4}" \
+  -DFREETYPE="{path of freetype windows binaries}" \
+  -DUSE_EXTERNAL_GLFW=ON \
+  -DGLFW="{path of GLFW built in step-3}"
+$ make -C build -j$(nproc) install
+$ cd bin
+$ wine RaylibIMEInputSampleApp.exe
 ```
 
 # Licenses
