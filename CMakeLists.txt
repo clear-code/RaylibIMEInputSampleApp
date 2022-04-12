@@ -20,9 +20,15 @@ cmake_minimum_required(VERSION 3.0)
 project(RaylibIMEInputSampleApp C)
 
 
+option(USE_EXTERNAL_GLFW "Use raylib built with external GLFW. GLFW package needs to be found." OFF)
+
+
 if (NOT WIN32)
     find_package(raylib REQUIRED)
     find_package(Freetype REQUIRED)
+    if (USE_EXTERNAL_GLFW)
+        find_package(glfw3 REQUIRED)
+    endif()
 endif()
 
 
@@ -40,6 +46,10 @@ list(APPEND DEPENDENCIES "./resources")
 
 if (WIN32)
     message("For Windows")
+
+    if (USE_EXTERNAL_GLFW)
+        message(FATAL_ERROR "Not support USE_EXTERNAL_GLFW for Windows now.")
+    endif()
 
     set(RAYLIB "" CACHE STRING "The path of raylib binaries")
     if (NOT EXISTS ${RAYLIB})
@@ -70,6 +80,10 @@ if (WIN32)
 elseif (APPLE)
     message("For MacOS")
 
+    if (USE_EXTERNAL_GLFW)
+        message(FATAL_ERROR "Not support USE_EXTERNAL_GLFW for MacOS now.")
+    endif()
+
     target_link_libraries(CheckCharInput PRIVATE raylib)
 
     target_include_directories(CFreeTypeManager PUBLIC ${FREETYPE_INCLUDE_DIRS})
@@ -92,6 +106,9 @@ elseif (UNIX)
     target_link_libraries(CFreeTypeManager PUBLIC raylib freetype)
 
     list(APPEND LIBS raylib freetype)
+    if (USE_EXTERNAL_GLFW)
+        list(APPEND LIBS glfw)
+    endif()
     list(APPEND LIBS GL m pthread dl rt X11)
 endif()
 

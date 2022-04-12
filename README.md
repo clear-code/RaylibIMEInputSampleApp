@@ -34,29 +34,82 @@ $ git clone https://github.com/ubawurinna/freetype-windows-binaries.git
 
 ## Ubuntu
 
-1. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib.git
+There are 2 ways to build this app.
+
+- With raylib built by **internal** GLFW
+- With raylib built by **external** GLFW
+  - Mainly use this way for the development
+
+### With raylib built by internal GLFW
+
+1. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib/tree/better-ime-support
     - Refer to: https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux
 
-```console
+```sh
 $ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
-$ git clone --branch=better-ime-support https://github.com/clear-code/raylib.git
+$ git clone --branch=better-ime-support git@github.com:clear-code/raylib.git
 $ cd raylib
-$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin -DBUILD_EXAMPLES=OFF
+$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin
 $ make -C build -j$(nproc) install
 ```
 
 2. Build and run this app
+    - Specify the path of raylib built in step-1 to `CMAKE_PREFIX_PATH`
+        - Ex: `-DCMAKE_PREFIX_PATH=/test/raylib/bin`
 
-```console
-$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin -DCMAKE_PREFIX_PATH={...}/raylib/bin
+```sh
+$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin -DCMAKE_PREFIX_PATH={...}
 $ make -C build -j$(nproc) install
 $ cd bin
 $ ./RaylibIMEInputSampleApp
 ```
 
+### With raylib built by external GLFW
+
+1. Build the forked GLFW in which we are developing IME support: https://github.com/clear-code/glfw/tree/3.4-2021-06-09+im-support
+
+```sh
+$ git clone --branch=3.4-2021-06-09+im-support git@github.com:clear-code/glfw.git
+$ cd glfw
+$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin
+$ make -C build -j$(nproc) install
+```
+
+2. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib/tree/better-ime-support
+    - Refer to: https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux
+    - Set `USE_EXTERNAL_GLFW` `ON`
+    - Specify the path of GLFW built in step-1 to `CMAKE_PREFIX_PATH`
+        - Ex: `-DCMAKE_PREFIX_PATH=/test/glfw/bin`
+
+```sh
+$ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
+$ git clone --branch=better-ime-support git@github.com:clear-code/raylib.git
+$ cd raylib
+$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin \
+  -DUSE_EXTERNAL_GLFW=ON \
+  -DCMAKE_PREFIX_PATH={path of GLFW build in step-1}
+$ make -C build -j$(nproc) install
+```
+
+3. Build and run this app
+    - Set `USE_EXTERNAL_GLFW` `ON`
+    - Specify both of the path of GLFW built in step-1 and raylib built in step-2 to `CMAKE_PREFIX_PATH`
+        - Ex: `-DCMAKE_PREFIX_PATH="/test/glfw/bin;/test/raylib/bin;"`
+
+```sh
+$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin \
+  -DUSE_EXTERNAL_GLFW=ON \
+  -DCMAKE_PREFIX_PATH="{path of GLFW build in step-1};{path of raylib build in step-2};"
+$ make -C build -j$(nproc) install
+$ cd bin
+$ ./RaylibIMEInputSampleApp
+```
+
+### Common notes
+
 If `freetype` is not found, you may need `libfreetype6-dev` or `libfreetype-dev`.
 
-```console
+```sh
 $ sudo apt install libfreetype6-dev
 ```
 
