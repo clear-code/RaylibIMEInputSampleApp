@@ -25,10 +25,10 @@ Install the following tools.
 
 ### With raylib built by internal GLFW
 
-1. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib/tree/better-ime-support
+1. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib/tree/better-ime-support-for-internal-glfw
 
 ```sh
-$ git clone --branch=better-ime-support https://github.com/clear-code/raylib.git
+$ git clone --branch=better-ime-support-for-internal-glfw https://github.com/clear-code/raylib.git
 $ cd raylib
 $ cmake -B build -G "MinGW Makefiles" -D CMAKE_INSTALL_PREFIX=bin -D BUILD_EXAMPLES=OFF
 $ mingw32-make -C build install
@@ -119,12 +119,12 @@ There are 2 ways to build this app.
 
 ### With raylib built by internal GLFW
 
-1. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib/tree/better-ime-support
+1. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib/tree/better-ime-support-for-internal-glfw
     - Refer to: https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux
 
 ```sh
 $ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
-$ git clone --branch=better-ime-support git@github.com:clear-code/raylib.git
+$ git clone --branch=better-ime-support-for-internal-glfw git@github.com:clear-code/raylib.git
 $ cd raylib
 $ cmake -B build -DCMAKE_INSTALL_PREFIX=bin
 $ make -C build -j$(nproc) install
