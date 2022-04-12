@@ -8,29 +8,106 @@ This is a sample application for Japanese input with [raylib](https://github.com
 
 ## Windows
 
-1. Install the following tools.
-    - cmake: https://cmake.org/download/
-    - mingw32-make: https://sourceforge.net/projects/mingw-w64/files/
-2. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib.git
+There are 2 ways to build this app.
 
-```console
+- With raylib built by **internal** GLFW
+- With raylib built by **external** GLFW
+  - Mainly use this way for the development
+
+### Prepare
+
+Install the following tools.
+
+- cmake: https://cmake.org/download/
+- mingw32-make: https://sourceforge.net/projects/mingw-w64/files/
+- freetype binaries: https://github.com/ubawurinna/freetype-windows-binaries
+    - `$ git clone https://github.com/ubawurinna/freetype-windows-binaries.git`
+
+### With raylib built by internal GLFW
+
+1. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib/tree/better-ime-support
+
+```sh
 $ git clone --branch=better-ime-support https://github.com/clear-code/raylib.git
 $ cd raylib
 $ cmake -B build -G "MinGW Makefiles" -D CMAKE_INSTALL_PREFIX=bin -D BUILD_EXAMPLES=OFF
 $ mingw32-make -C build install
 ```
 
-3. Get freetype binaries from https://github.com/ubawurinna/freetype-windows-binaries
+2. Build and run this app
+    - Specify the path of raylib built in step-1 to `RAYLIB`
+        - Ex: `-D RAYLIB="C:/test/raylib/bin"`
+    - Specify the path of freetype to `FREETYPE`
+        - Ex: `-D FREETYPE="C:\\test\\freetype-windows-binaries"` (We can use both `/` and `\\` for the separetor)
 
-```console
-$ git clone https://github.com/ubawurinna/freetype-windows-binaries.git
+```sh
+$ cmake -B build -G "MinGW Makefiles" -D CMAKE_INSTALL_PREFIX=bin -D RAYLIB="{...}" -D FREETYPE="{...}"
+$ mingw32-make -C build install
+$ cd bin
+$ .\RaylibIMEInputSampleApp.exe
 ```
 
-4. Edit `build_windows.ps1`
-    - Set the installed dir path of raylib to `$raylibBinDir`
-    - Set the cloned dir path of freetype-windows-binaries to `$freeTypeWindowsBinDir`
-5. Run `build_windows.ps1` by Windows PowerShell
-6. Open `bin` dir newly created, and run `RaylibIMEInputSampleApp.exe`
+### With raylib built by external GLFW
+
+1. Clone and add some fixes to the forked GLFW in which we are developing IME support: https://github.com/clear-code/glfw/tree/3.4-2021-06-09+im-support
+
+Clone the repository.
+
+```sh
+$ git clone --branch=3.4-2021-06-09+im-support https://github.com/clear-code/glfw.git
+$ cd glfw
+```
+
+Add the following fix to `glfw3native.h` to avoid duplicated declaration errors.
+
+```diff
+--- a/include/GLFW/glfw3native.h
++++ b/include/GLFW/glfw3native.h
+@@ -90,7 +90,10 @@ extern "C" {
+   #undef APIENTRY
+   #undef GLFW_APIENTRY_DEFINED
+  #endif
+- #include <windows.h>
++ // #include <windows.h>
++ typedef void *PVOID;
++ typedef PVOID HANDLE;
++ typedef HANDLE HWND;
+```
+
+2. Build the GLFW
+
+```sh
+$ cmake -B build -G "MinGW Makefiles" -D CMAKE_INSTALL_PREFIX=bin
+$ mingw32-make -C build install
+```
+
+3. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib/tree/better-ime-support
+    - Set `USE_EXTERNAL_GLFW` `ON`
+    - Specify the path of GLFW built in step-2 to `CMAKE_PREFIX_PATH`
+        - Ex: `-D CMAKE_PREFIX_PATH=C:/test/glfw/bin`
+
+```sh
+$ git clone --branch=better-ime-support https://github.com/clear-code/raylib.git
+$ cd raylib
+$ cmake -B build -G "MinGW Makefiles" -D CMAKE_INSTALL_PREFIX=bin -D BUILD_EXAMPLES=OFF -D USE_EXTERNAL_GLFW=ON -D CMAKE_PREFIX_PATH="{...}"
+$ mingw32-make -C build install
+```
+
+4. Build and run this app
+    - Specify the path of raylib built in step-3 to `RAYLIB`
+        - Ex: `-D RAYLIB="C:/test/raylib/bin"`
+    - Specify the path of freetype to `FREETYPE`
+        - Ex: `-D FREETYPE="C:\\test\\freetype-windows-binaries"`
+    - Set `USE_EXTERNAL_GLFW` `ON`
+    - Specify the path of GLFW built in step-2 to `GLFW`
+        - Ex: `-D GLFW="C:/test/glfw/bin"`
+
+```sh
+$ cmake -B build -G "MinGW Makefiles" -D CMAKE_INSTALL_PREFIX=bin -D RAYLIB="{...}" -D FREETYPE="{...}" -D USE_EXTERNAL_GLFW=ON -D GLFW="{...}"
+$ mingw32-make -C build install
+$ cd bin
+$ .\RaylibIMEInputSampleApp.exe
+```
 
 ## Ubuntu
 
