@@ -101,13 +101,20 @@ There are 2 ways to build this app.
 - With raylib built by **external** GLFW
   - Mainly use this way for the development
 
+### Prepare
+
+Install dependent packages:
+
+```sh
+$ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
+```
+
 ### With raylib built by internal GLFW
 
 1. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib/tree/better-ime-support-for-internal-glfw
     - Refer to: https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux
 
 ```sh
-$ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 $ git clone --branch=better-ime-support-for-internal-glfw git@github.com:clear-code/raylib.git
 $ cd raylib
 $ cmake -B build -DCMAKE_INSTALL_PREFIX=bin
@@ -143,7 +150,6 @@ $ make -C build -j$(nproc) install
         - Ex: `-DCMAKE_PREFIX_PATH=/test/glfw/bin`
 
 ```sh
-$ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 $ git clone --branch=better-ime-support https://github.com/clear-code/raylib.git
 $ cd raylib
 $ cmake -B build -DCMAKE_INSTALL_PREFIX=bin \
@@ -301,7 +307,6 @@ $ make -C build -j$(nproc) install
         - Ex: `-DCMAKE_PREFIX_PATH=/test/glfw/bin`
 
 ```sh
-$ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
 $ git clone --branch=better-ime-support https://github.com/clear-code/raylib.git
 $ cd raylib
 $ cmake -B build \
