@@ -174,29 +174,81 @@ If `freetype` is not found, you may need `libfreetype6-dev` or `libfreetype-dev`
 $ sudo apt install libfreetype6-dev
 ```
 
-## MacOS
+## macOS
 
-1. Install cmake and freetype.
+There are 2 ways to build this app.
+
+- With raylib built by **internal** GLFW
+- With raylib built by **external** GLFW
+  - Mainly use this way for the development
+
+### Prepare
+
+Install cmake and freetype.
 
 ```console
 $ brew install cmake
 $ brew install freetype
 ```
 
-2. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib.git
+### With raylib built by internal GLFW
+
+1. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib/tree/better-ime-support-for-internal-glfw
 
 ```console
-$ git clone --branch=better-ime-support https://github.com/clear-code/raylib.git
+$ git clone --branch=better-ime-support-for-internal-glfw https://github.com/clear-code/raylib.git
 $ cd raylib
-$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin -DBUILD_EXAMPLES=OFF
+$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin
+$ make -C build install
+```
+
+2. Build and run this app
+    - Specify the path of raylib built in step-1 to `CMAKE_PREFIX_PATH`
+        - Ex: `-DCMAKE_PREFIX_PATH=/test/raylib/bin`
+
+```console
+$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin -DCMAKE_PREFIX_PATH={...}/raylib/bin
+$ make -C build install
+$ cd bin
+$ ./RaylibIMEInputSampleApp
+```
+
+### With raylib built by external GLFW
+
+1. Build the forked GLFW in which we are developing IME support: https://github.com/clear-code/glfw/tree/3.4-2022-03-31+im-support
+
+```sh
+$ git clone --branch=3.4-2022-03-31+im-support git@github.com:clear-code/glfw.git
+$ cd glfw
+$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin
+$ make -C build install
+```
+
+2. Build the forked raylib in which we are developing IME support: https://github.com/clear-code/raylib/tree/better-ime-support
+    - Set `USE_EXTERNAL_GLFW` `ON`
+    - Specify the path of GLFW built in step-1 to `CMAKE_PREFIX_PATH`
+        - Ex: `-DCMAKE_PREFIX_PATH=/test/glfw/bin`
+
+```sh
+$ git clone --branch=better-ime-support git@github.com:clear-code/raylib.git
+$ cd raylib
+$ cmake -B build \
+  -DCMAKE_INSTALL_PREFIX=bin \
+  -DUSE_EXTERNAL_GLFW=ON \
+  -DCMAKE_PREFIX_PATH="{path of GLFW built in step-1}"
 $ make -C build install
 ```
 
 3. Build and run this app
-    - Currently impossible to build with the `better-ime-support` branch of raylib.
+    - Set `USE_EXTERNAL_GLFW` `ON`
+    - Specify both of the path of GLFW built in step-1 and raylib built in step-2 to `CMAKE_PREFIX_PATH`
+        - Ex: `-DCMAKE_PREFIX_PATH="/test/glfw/bin;/test/raylib/bin;"`
 
-```console
-$ cmake -B build -DCMAKE_INSTALL_PREFIX=bin -DCMAKE_PREFIX_PATH={...}/raylib/bin
+```sh
+$ cmake -B build \
+  -DCMAKE_INSTALL_PREFIX=bin \
+  -DUSE_EXTERNAL_GLFW=ON \
+  -DCMAKE_PREFIX_PATH="{path of GLFW built in step-1};{path of raylib built in step-2};"
 $ make -C build install
 $ cd bin
 $ ./RaylibIMEInputSampleApp
