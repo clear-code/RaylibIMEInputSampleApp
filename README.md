@@ -49,12 +49,12 @@ $ .\RaylibIMEInputSampleApp.exe
 
 ### With raylib built by external GLFW
 
-1. Clone and add some fixes to the forked GLFW in which we are developing IME support: https://github.com/clear-code/glfw/tree/3.4-2021-06-09+im-support
+1. Clone and add some fixes to the forked GLFW in which we are developing IME support: https://github.com/clear-code/glfw/tree/3.4-2022-03-31+im-support
 
 Clone the repository.
 
 ```sh
-$ git clone --branch=3.4-2021-06-09+im-support https://github.com/clear-code/glfw.git
+$ git clone --branch=3.4-2022-03-31+im-support https://github.com/clear-code/glfw.git
 $ cd glfw
 ```
 
@@ -143,10 +143,10 @@ $ ./RaylibIMEInputSampleApp
 
 ### With raylib built by external GLFW
 
-1. Build the forked GLFW in which we are developing IME support: https://github.com/clear-code/glfw/tree/3.4-2021-06-09+im-support
+1. Build the forked GLFW in which we are developing IME support: https://github.com/clear-code/glfw/tree/3.4-2022-03-31+im-support
 
 ```sh
-$ git clone --branch=3.4-2021-06-09+im-support git@github.com:clear-code/glfw.git
+$ git clone --branch=3.4-2022-03-31+im-support git@github.com:clear-code/glfw.git
 $ cd glfw
 $ cmake -B build -DCMAKE_INSTALL_PREFIX=bin
 $ make -C build -j$(nproc) install
@@ -237,12 +237,12 @@ Clone freetype binaries: https://github.com/ubawurinna/freetype-windows-binaries
 ```sh
 $ git clone git@github.com:ubawurinna/freetype-windows-binaries.git
 ```
-2. Clone and add some fixes to the forked GLFW in which we are developing IME support: https://github.com/clear-code/glfw/tree/3.4-2021-06-09+im-support
+2. Clone and add some fixes to the forked GLFW in which we are developing IME support: https://github.com/clear-code/glfw/tree/3.4-2022-03-31+im-support
 
 Clone the repository.
 
 ```sh
-$ git clone --branch=3.4-2021-06-09+im-support git@github.com:clear-code/glfw.git
+$ git clone --branch=3.4-2022-03-31+im-support git@github.com:clear-code/glfw.git
 $ cd glfw
 ```
 
