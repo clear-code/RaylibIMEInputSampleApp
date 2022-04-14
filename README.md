@@ -58,22 +58,6 @@ $ git clone --branch=3.4-2022-03-31+im-support https://github.com/clear-code/glf
 $ cd glfw
 ```
 
-Add the following fix to `glfw3native.h` to avoid duplicated declaration errors.
-
-```diff
---- a/include/GLFW/glfw3native.h
-+++ b/include/GLFW/glfw3native.h
-@@ -90,7 +90,10 @@ extern "C" {
-   #undef APIENTRY
-   #undef GLFW_APIENTRY_DEFINED
-  #endif
-- #include <windows.h>
-+ // #include <windows.h>
-+ typedef void *PVOID;
-+ typedef PVOID HANDLE;
-+ typedef HANDLE HWND;
-```
-
 2. Build the GLFW
 
 ```sh
@@ -244,22 +228,6 @@ Clone the repository.
 ```sh
 $ git clone --branch=3.4-2022-03-31+im-support git@github.com:clear-code/glfw.git
 $ cd glfw
-```
-
-Add the following fix to `glfw3native.h` to avoid duplicated declaration errors.
-
-```diff
---- a/include/GLFW/glfw3native.h
-+++ b/include/GLFW/glfw3native.h
-@@ -90,7 +90,10 @@ extern "C" {
-   #undef APIENTRY
-   #undef GLFW_APIENTRY_DEFINED
-  #endif
-- #include <windows.h>
-+ // #include <windows.h>
-+ typedef void *PVOID;
-+ typedef PVOID HANDLE;
-+ typedef HANDLE HWND;
 ```
 
 3. Build the GLFW
