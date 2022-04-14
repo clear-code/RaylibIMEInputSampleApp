@@ -1,4 +1,5 @@
 # Copyright (C) 2022 Daijiro Fukuda <fukuda@clear-code.com>
+# Copyright (C) 2022 Takuro Ashie <ashie@clear-code.com>
 
 # This file is part of RaylibIMEInputSampleApp.
 

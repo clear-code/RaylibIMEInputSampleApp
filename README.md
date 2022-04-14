@@ -348,8 +348,9 @@ $ wine RaylibIMEInputSampleApp.exe
 
 ## This Program
 
-Copyright (C) 2022 鏡原 尚 <kagamihara@sena-networks.co.jp>  
-Copyright (C) 2022 Daijiro Fukuda <fukuda@clear-code.com>  
+Copyright (C) 2022 鏡原 尚 <kagamihara@sena-networks.co.jp>
+Copyright (C) 2022 Daijiro Fukuda <fukuda@clear-code.com>
+Copyright (C) 2022 Takuro Ashie <ashie@clear-code.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
