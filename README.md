@@ -30,7 +30,7 @@ Install the following tools.
 ```sh
 $ git clone --branch=better-ime-support-for-internal-glfw https://github.com/clear-code/raylib.git
 $ cd raylib
-$ cmake -B build -G "MinGW Makefiles" -D CMAKE_INSTALL_PREFIX=bin -D BUILD_EXAMPLES=OFF
+$ cmake -B build -G "MinGW Makefiles" -D CMAKE_INSTALL_PREFIX=bin
 $ mingw32-make -C build install
 ```
 
@@ -73,7 +73,7 @@ $ mingw32-make -C build install
 ```sh
 $ git clone --branch=better-ime-support https://github.com/clear-code/raylib.git
 $ cd raylib
-$ cmake -B build -G "MinGW Makefiles" -D CMAKE_INSTALL_PREFIX=bin -D BUILD_EXAMPLES=OFF -D USE_EXTERNAL_GLFW=ON -D CMAKE_PREFIX_PATH="{...}"
+$ cmake -B build -G "MinGW Makefiles" -D CMAKE_INSTALL_PREFIX=bin -D USE_EXTERNAL_GLFW=ON -D CMAKE_PREFIX_PATH="{...}"
 $ mingw32-make -C build install
 ```
 
@@ -313,8 +313,7 @@ $ cmake -B build \
   -DCMAKE_TOOLCHAIN_FILE="{path of GLFW repo}/CMake/x86_64-w64-mingw32.cmake" \
   -DCMAKE_INSTALL_PREFIX=bin \
   -DUSE_EXTERNAL_GLFW=ON \
-  -DCMAKE_PREFIX_PATH="{path of GLFW built in step-3}" \
-  -DBUILD_EXAMPLES=OFF
+  -DCMAKE_PREFIX_PATH="{path of GLFW built in step-3}"
 $ make -C build -j$(nproc) install
 ```
 
