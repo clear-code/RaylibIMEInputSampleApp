@@ -130,7 +130,7 @@ $ ./RaylibIMEInputSampleApp
 1. Build the forked GLFW in which we are developing IME support: https://github.com/clear-code/glfw/tree/3.4-2022-03-31+im-support
 
 ```sh
-$ git clone --branch=3.4-2022-03-31+im-support git@github.com:clear-code/glfw.git
+$ git clone --branch=3.4-2022-03-31+im-support https://github.com/clear-code/glfw.git
 $ cd glfw
 $ cmake -B build -DCMAKE_INSTALL_PREFIX=bin
 $ make -C build -j$(nproc) install
@@ -144,7 +144,7 @@ $ make -C build -j$(nproc) install
 
 ```sh
 $ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
-$ git clone --branch=better-ime-support git@github.com:clear-code/raylib.git
+$ git clone --branch=better-ime-support https://github.com/clear-code/raylib.git
 $ cd raylib
 $ cmake -B build -DCMAKE_INSTALL_PREFIX=bin \
   -DUSE_EXTERNAL_GLFW=ON \
@@ -218,7 +218,7 @@ $ ./RaylibIMEInputSampleApp
 1. Build the forked GLFW in which we are developing IME support: https://github.com/clear-code/glfw/tree/3.4-2022-03-31+im-support
 
 ```sh
-$ git clone --branch=3.4-2022-03-31+im-support git@github.com:clear-code/glfw.git
+$ git clone --branch=3.4-2022-03-31+im-support https://github.com/clear-code/glfw.git
 $ cd glfw
 $ cmake -B build -DCMAKE_INSTALL_PREFIX=bin
 $ make -C build install
@@ -230,7 +230,7 @@ $ make -C build install
         - Ex: `-DCMAKE_PREFIX_PATH=/test/glfw/bin`
 
 ```sh
-$ git clone --branch=better-ime-support git@github.com:clear-code/raylib.git
+$ git clone --branch=better-ime-support https://github.com/clear-code/raylib.git
 $ cd raylib
 $ cmake -B build \
   -DCMAKE_INSTALL_PREFIX=bin \
@@ -271,14 +271,14 @@ $ sudo apt install mingw-w64 wine
 Clone freetype binaries: https://github.com/ubawurinna/freetype-windows-binaries
 
 ```sh
-$ git clone git@github.com:ubawurinna/freetype-windows-binaries.git
+$ git clone https://github.com/ubawurinna/freetype-windows-binaries.git
 ```
 2. Clone and add some fixes to the forked GLFW in which we are developing IME support: https://github.com/clear-code/glfw/tree/3.4-2022-03-31+im-support
 
 Clone the repository.
 
 ```sh
-$ git clone --branch=3.4-2022-03-31+im-support git@github.com:clear-code/glfw.git
+$ git clone --branch=3.4-2022-03-31+im-support https://github.com/clear-code/glfw.git
 $ cd glfw
 ```
 
@@ -302,7 +302,7 @@ $ make -C build -j$(nproc) install
 
 ```sh
 $ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
-$ git clone --branch=better-ime-support git@github.com:clear-code/raylib.git
+$ git clone --branch=better-ime-support https://github.com/clear-code/raylib.git
 $ cd raylib
 $ cmake -B build \
   -DCMAKE_TOOLCHAIN_FILE="{path of GLFW repo}/CMake/x86_64-w64-mingw32.cmake" \
