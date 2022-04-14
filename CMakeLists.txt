@@ -92,10 +92,6 @@ if (WIN32)
 elseif (APPLE)
     message("For MacOS")
 
-    if (USE_EXTERNAL_GLFW)
-        message(FATAL_ERROR "Not support USE_EXTERNAL_GLFW for MacOS now.")
-    endif()
-
     target_link_libraries(CheckCharInput PRIVATE raylib)
 
     target_include_directories(CFreeTypeManager PUBLIC ${FREETYPE_INCLUDE_DIRS})
@@ -110,6 +106,9 @@ elseif (APPLE)
         "-framework CoreFoundation"
         "-framework OpenGL"
     )
+    if (USE_EXTERNAL_GLFW)
+        list(APPEND LIBS glfw)
+    endif()
 elseif (UNIX)
     message("For UNIX")
 
