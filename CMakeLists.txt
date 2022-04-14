@@ -104,6 +104,7 @@ elseif (APPLE)
     list(APPEND LIBS
         raylib
         ${FREETYPE_LIBRARIES}
+        "-framework Carbon"
         "-framework Cocoa"
         "-framework IOKit"
         "-framework CoreFoundation"
