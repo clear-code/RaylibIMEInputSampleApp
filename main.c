@@ -59,6 +59,8 @@ int main(void)
     {
         // Update
         //----------------------------------------------------------------------------------
+        bool is_ime_active = GetImeStatus();
+        bool exist_preedit = PreeditExists();
 
         //文字入力確認
         unsigned int input_num = GetInputCharNum();
@@ -72,16 +74,19 @@ int main(void)
             change_text = true;
         }
 
-        input_num = GetPreeditCharNum();
-        if (input_num > 0)
+        if (is_ime_active)
         {
-            preeditText[0] = '\0';
-            wchar_t text[64];
-            GetPreeditChar(text);
+            input_num = GetPreeditCharNum();
+            if (input_num > 0)
+            {
+                preeditText[0] = '\0';
+                wchar_t text[64];
+                GetPreeditChar(text);
 
-            wcscat(preeditText, text);
+                wcscat(preeditText, text);
 
-            change_preedit = true;
+                change_preedit = true;
+            }
         }
 
         //入力された文字から画像を作成
@@ -106,7 +111,10 @@ int main(void)
 
         ClearBackground(RAYWHITE);
 
-        DrawTexture(texturePreedit, 0, 0, WHITE);
+        if (is_ime_active && exist_preedit)
+        {
+            DrawTexture(texturePreedit, 0, 0, WHITE);
+        }
         DrawTexture(texture, 0, 20, WHITE);
 
         DrawFPS(700, 10);
