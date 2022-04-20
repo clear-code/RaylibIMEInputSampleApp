@@ -84,7 +84,7 @@ if (WIN32)
     if (USE_EXTERNAL_GLFW)
         list(APPEND LIBS ${GLFW_LIBRARY})
     endif()
-    list(APPEND LIBS winmm imm32)
+    list(APPEND LIBS winmm)
 
     list(APPEND DEPENDENCIES ${FREETYPE_LIBRARY})
     if (USE_EXTERNAL_GLFW)
