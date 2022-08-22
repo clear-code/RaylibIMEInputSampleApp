@@ -19,7 +19,16 @@
 
 #include "CFreeTypeManager.h"
 #include "CheckCharInput.h"
+#include "PreeditManager.h"
 #include <wchar.h>
+
+static FreeTypeManager ftManager;
+static Texture2D texturePreedit;
+
+static void OnPreeditChanged(wchar_t* preedit)
+{
+    texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, preedit);
+}
 
 int main(void)
 {
@@ -30,9 +39,11 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "RaylibIMEInputSampleApp");
     // ToggleFullscreen();
-    SetPreeditCursorPosition(10, 20, 0);
 
-    FreeTypeManager ftManager;
+    PreeditManager_Init();
+    PreeditManager_UpdateWindowPos(10, 20);
+    PreeditManager_SetOnPreeditChanged(OnPreeditChanged);
+
     bool has_succeeded = FreeTypeManager_Initializ(&ftManager, "/resources/GenShinGothic-Regular.ttf", screenWidth, screenHeight, 16);
     if (!has_succeeded) {
         printf("FreeTypeManager_Initializ failed. Can't start the app.\n");
@@ -40,70 +51,34 @@ int main(void)
     }
 
     SetTargetFPS(30);               // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
 
     wchar_t wText[1024];
-    wchar_t preeditText[1024];
     unsigned int wText_len = 0;
 
     FreeTypeManager_ConvertUtf8toUtf32(wText, "");
-    FreeTypeManager_ConvertUtf8toUtf32(preeditText, "");
     Texture2D texture = FreeTypeManager_OutputRaylibImage(&ftManager, wText);
-    Texture2D texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, preeditText);
     wText_len = wcslen(wText);
 
-    bool change_text = false;
-    bool change_preedit = false;
+    texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, u"");
+    //--------------------------------------------------------------------------------------
+
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         // Update
         //----------------------------------------------------------------------------------
-        bool is_ime_active = GetImeStatus();
-        bool exist_preedit = PreeditExists();
 
-        //文字入力確認
-        unsigned int input_num = GetInputCharNum();
-        if (input_num > 0)
+        if (GetInputCharNum())
         {
             wchar_t text[64];
             GetInputChar(text);
 
             wcscat(wText, text);
 
-            change_text = true;
-        }
-
-        if (is_ime_active)
-        {
-            input_num = GetPreeditCharNum();
-            if (input_num > 0)
-            {
-                preeditText[0] = '\0';
-                wchar_t text[64];
-                GetPreeditChar(text);
-
-                wcscat(preeditText, text);
-
-                change_preedit = true;
-            }
-        }
-
-        //入力された文字から画像を作成
-        if (change_text == true)
-        {
             texture = FreeTypeManager_OutputRaylibImage(&ftManager, wText);
-            change_text = false;
-        }
-
-        if (change_preedit == true)
-        {
-            texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, preeditText);
-            change_preedit = false;
         }
 
         //----------------------------------------------------------------------------------
-
 
         // Draw
         //----------------------------------------------------------------------------------
@@ -111,10 +86,7 @@ int main(void)
 
         ClearBackground(RAYWHITE);
 
-        if (is_ime_active && exist_preedit)
-        {
-            DrawTexture(texturePreedit, 0, 0, WHITE);
-        }
+        DrawTexture(texturePreedit, 0, 0, WHITE);
         DrawTexture(texture, 0, 20, WHITE);
 
         DrawFPS(700, 10);

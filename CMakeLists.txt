@@ -36,6 +36,9 @@ endif()
 add_library(CheckCharInput CheckCharInput.c)
 list(APPEND LIBS CheckCharInput)
 
+add_library(PreeditManager PreeditManager.c)
+list(APPEND LIBS PreeditManager)
+
 add_library(CFreeTypeManager CFreeTypeManager.c)
 list(APPEND LIBS CFreeTypeManager)
 
@@ -75,6 +78,9 @@ if (WIN32)
     target_include_directories(CheckCharInput PRIVATE ${RAYLIB_INCLUDE_DIR})
     target_link_libraries(CheckCharInput PRIVATE ${RAYLIB_LIBRARY})
 
+    target_include_directories(PreeditManager PRIVATE ${RAYLIB_INCLUDE_DIR})
+    target_link_libraries(PreeditManager PRIVATE ${RAYLIB_LIBRARY})
+
     target_include_directories(CFreeTypeManager PUBLIC ${RAYLIB_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR})
     target_link_libraries(CFreeTypeManager PUBLIC ${RAYLIB_LIBRARY} ${FREETYPE_LIBRARY})
 
@@ -95,6 +101,8 @@ elseif (APPLE)
 
     target_link_libraries(CheckCharInput PRIVATE raylib)
 
+    target_link_libraries(PreeditManager PRIVATE raylib)
+
     target_include_directories(CFreeTypeManager PUBLIC ${FREETYPE_INCLUDE_DIRS})
     target_link_libraries(CFreeTypeManager PUBLIC raylib ${FREETYPE_LIBRARIES})
 
@@ -114,6 +122,8 @@ elseif (UNIX)
     message("For UNIX")
 
     target_link_libraries(CheckCharInput PRIVATE raylib)
+
+    target_link_libraries(PreeditManager PRIVATE raylib)
 
     target_include_directories(CFreeTypeManager PUBLIC ${FREETYPE_INCLUDE_DIRS})
     target_link_libraries(CFreeTypeManager PUBLIC raylib freetype)
