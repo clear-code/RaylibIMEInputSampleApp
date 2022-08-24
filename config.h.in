@@ -1,0 +1,2 @@
+#define RESOURCE_DIR "@RESOURCE_DIR@"
+#define FONT_FILEPATH "@RESOURCE_DIR@GenShinGothic-Regular.ttf"

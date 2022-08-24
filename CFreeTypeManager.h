@@ -48,7 +48,7 @@ typedef struct FreeTypeManager
 } FreeTypeManager;
 
 //FreeTypeManagerの初期化
-bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filename, int width, int height, int font_size);
+bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filepath, int width, int height, int font_size);
 
 //渡した文字列からTexture2Dを作成する
 Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const unsigned int* view_text, unsigned int text_len);

@@ -17,7 +17,7 @@
 
 #include "CFreeTypeManager.h"
 
-bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filename,  int width, int height, int font_size)
+bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filepath,  int width, int height, int font_size)
 {
     setlocale(LC_CTYPE, "ja_JP");
 
@@ -25,11 +25,6 @@ bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filename,
     FreeTypeManager_SetFontSize(ft_manager, font_size);
 
     ft_manager->m_FontSize = font_size;
-
-    //ディレクトリ
-    char path_name[512];
-    getcwd(path_name, 512);
-    strcat(path_name, font_filename);
 
     //freetypeライブラリ初期化
     int error = FT_Init_FreeType(&ft_manager->m_ftLibrary);
@@ -44,7 +39,7 @@ bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filename,
     }
 
     //読み込んだフォントからface作成
-    error = FT_New_Face(ft_manager->m_ftLibrary, path_name, 0, &ft_manager->m_ftFace);
+    error = FT_New_Face(ft_manager->m_ftLibrary, font_filepath, 0, &ft_manager->m_ftFace);
 
     if (error != 0)
     {

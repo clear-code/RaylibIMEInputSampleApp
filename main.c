@@ -17,6 +17,7 @@
 
 #include "raylib.h"
 
+#include "config.h"
 #include "CFreeTypeManager.h"
 #include "CheckCharInput.h"
 #include "PreeditManager.h"
@@ -45,7 +46,7 @@ int main(void)
     PreeditManager_UpdateWindowPos(10, 20);
     PreeditManager_SetOnPreeditChanged(OnPreeditChanged);
 
-    bool has_succeeded = FreeTypeManager_Initializ(&ftManager, "/resources/GenShinGothic-Regular.ttf", screenWidth, screenHeight, 16);
+    bool has_succeeded = FreeTypeManager_Initializ(&ftManager, FONT_FILEPATH, screenWidth, screenHeight, 16);
     if (!has_succeeded) {
         printf("FreeTypeManager_Initializ failed. Can't start the app.\n");
         return 1;

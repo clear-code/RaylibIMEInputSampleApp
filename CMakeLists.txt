@@ -18,7 +18,7 @@
 
 cmake_minimum_required(VERSION 3.0)
 
-project(RaylibIMEInputSampleApp C)
+project(RaylibIMEInputSampleApp VERSION 0.1.0 LANGUAGES C)
 
 
 option(USE_EXTERNAL_GLFW "Use raylib built with external GLFW. GLFW package needs to be found." OFF)
@@ -42,10 +42,13 @@ list(APPEND LIBS PreeditManager)
 add_library(CFreeTypeManager CFreeTypeManager.c)
 list(APPEND LIBS CFreeTypeManager)
 
-add_executable(RaylibIMEInputSampleApp main.c)
+add_executable(RaylibIMEInputSampleApp MACOSX_BUNDLE main.c)
 
 set(INSTALL_PATH "${CMAKE_INSTALL_PREFIX}/")
-list(APPEND DEPENDENCIES "./resources")
+set(RESOURCE_DIR ${INSTALL_PATH})
+
+file(GLOB RESOUCE_FILES LIST_DIRECTORIES FALSE "./resources/*")
+list(APPEND DEPENDENCIES ${RESOUCE_FILES})
 
 
 if (WIN32)
@@ -118,6 +121,15 @@ elseif (APPLE)
     if (USE_EXTERNAL_GLFW)
         list(APPEND LIBS glfw)
     endif()
+
+    # Build as a macOS app bundle
+    set(RESOURCE_DIR ${INSTALL_PATH}${CMAKE_PROJECT_NAME}.app/Contents/Resources/)
+    set_target_properties(RaylibIMEInputSampleApp PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_BUNDLE_NAME ${CMAKE_PROJECT_NAME}
+        MACOSX_BUNDLE_BUNDLE_VERSION ${CMAKE_PROJECT_VERSION}
+        MACOSX_BUNDLE_SHORT_VERSION_STRING ${CMAKE_PROJECT_VERSION}
+    )
 elseif (UNIX)
     message("For UNIX")
 
@@ -135,14 +147,14 @@ elseif (UNIX)
     list(APPEND LIBS GL m pthread dl rt X11)
 endif()
 
+# Copy DEPENDENCIES to INSTALL_PATH
+# TODO: In macOS, somehow this copies DEPENDENCIES to both the bundle's Resources dir and directly under the install dir 
+set_target_properties(RaylibIMEInputSampleApp PROPERTIES RESOURCE "${DEPENDENCIES}")
 
 target_link_libraries(RaylibIMEInputSampleApp PRIVATE ${LIBS})
+target_sources(RaylibIMEInputSampleApp PRIVATE ${DEPENDENCIES})
 
+configure_file(config.h.in config.h)
+target_include_directories(RaylibIMEInputSampleApp PUBLIC ${PROJECT_BINARY_DIR})
 
 install(TARGETS RaylibIMEInputSampleApp DESTINATION ${INSTALL_PATH})
-
-
-# copy files necessary to run the exe
-foreach (path ${DEPENDENCIES})
-    file(COPY ${path} DESTINATION ${INSTALL_PATH})
-endforeach()
