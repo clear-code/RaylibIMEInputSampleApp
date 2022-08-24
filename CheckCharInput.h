@@ -19,13 +19,11 @@
 #define CheckCharInput_h
 
 #include <stdio.h>
-#include <stdbool.h>
-#include <wchar.h>
 
 //入力があるかどうか、入力があった場合入力された文字の長さを返す
 unsigned int GetInputCharNum();
 
 //入力された文字を取得する
-void GetInputChar(wchar_t* input_text);
+void GetInputChar(unsigned int* input_text);
 
 #endif /* CheckCharInput_h */

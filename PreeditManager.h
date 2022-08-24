@@ -15,13 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef CheckPreedit_h
-#define CheckPreedit_h
+#ifndef PreeditManager_h
+#define PreeditManager_h
 
 #include <stdio.h>
-#include <wchar.h>
 
-typedef void (*PreeditManager_OnPreeditChanged)(wchar_t* preedit);
+typedef void (*PreeditManager_OnPreeditChanged)(unsigned int* preedit, unsigned int length);
 
 void PreeditManager_Init();
 
@@ -29,6 +28,6 @@ void PreeditManager_UpdateWindowPos(int x, int y);
 
 void PreeditManager_SetOnPreeditChanged(PreeditManager_OnPreeditChanged onPreeditChanged);
 
-void PreeditManager_GetPreeditChar(wchar_t* input_text);
+void PreeditManager_GetPreeditChar(unsigned int* input_text);
 
-#endif /* CheckPreedit_h */
+#endif /* PreeditManager_h */

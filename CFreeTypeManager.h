@@ -22,7 +22,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <wchar.h>
 #include <locale.h>
 
 #include <ft2build.h>
@@ -51,11 +50,8 @@ typedef struct FreeTypeManager
 //FreeTypeManagerの初期化
 bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filename, int width, int height, int font_size);
 
-//マルチバイト文字からワイド文字に変換
-int FreeTypeManager_ConvertUtf8toUtf32(wchar_t* out_wchar, const char* conv_char);
-
 //渡した文字列からTexture2Dを作成する
-Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const wchar_t* view_text);
+Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const unsigned int* view_text, unsigned int text_len);
 
 //フォントサイズ設定
 void FreeTypeManager_SetFontSize(FreeTypeManager* ft_manager, int font_size);

@@ -20,14 +20,13 @@
 #include "CFreeTypeManager.h"
 #include "CheckCharInput.h"
 #include "PreeditManager.h"
-#include <wchar.h>
 
 static FreeTypeManager ftManager;
 static Texture2D texturePreedit;
 
-static void OnPreeditChanged(wchar_t* preedit)
+static void OnPreeditChanged(unsigned int* preedit, unsigned int length)
 {
-    texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, preedit);
+    texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, preedit, length);
 }
 
 int main(void)
@@ -52,14 +51,11 @@ int main(void)
 
     SetTargetFPS(30);               // Set our game to run at 60 frames-per-second
 
-    wchar_t wText[1024];
-    unsigned int wText_len = 0;
+    unsigned int unicode_points[1024];
+    unsigned int unicode_points_num = 0;
 
-    FreeTypeManager_ConvertUtf8toUtf32(wText, "");
-    Texture2D texture = FreeTypeManager_OutputRaylibImage(&ftManager, wText);
-    wText_len = wcslen(wText);
-
-    texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, u"");
+    Texture2D texture = FreeTypeManager_OutputRaylibImage(&ftManager, U"", 0);
+    texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, U"", 0);
     //--------------------------------------------------------------------------------------
 
     // Main game loop
@@ -68,14 +64,16 @@ int main(void)
         // Update
         //----------------------------------------------------------------------------------
 
-        if (GetInputCharNum())
+        unsigned int input_num = GetInputCharNum();
+        if (input_num > 0)
         {
-            wchar_t text[64];
+            unsigned int text[64];
             GetInputChar(text);
 
-            wcscat(wText, text);
+            for (int i = 0; i < input_num; ++i)
+                unicode_points[unicode_points_num++] = text[i];
 
-            texture = FreeTypeManager_OutputRaylibImage(&ftManager, wText);
+            texture = FreeTypeManager_OutputRaylibImage(&ftManager, unicode_points, unicode_points_num);
         }
 
         //----------------------------------------------------------------------------------

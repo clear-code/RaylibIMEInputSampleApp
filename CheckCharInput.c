@@ -20,15 +20,15 @@
 
 #include <string.h>
 
-#define     INPUT_TEXTARRAY_MAX     64
+#define INPUT_TEXTARRAY_MAX 64
 
-static wchar_t s_InputTextArray[INPUT_TEXTARRAY_MAX];
+static unsigned int s_InputTextArray[INPUT_TEXTARRAY_MAX];
 static unsigned int s_InputTextNum = 0;
 
 //入力があるかどうか、入力があった場合入力された文字の長さを返す
 unsigned int GetInputCharNum()
 {
-    wchar_t buf[64];
+    unsigned int buf[64];
     buf[0] = GetCharPressed();
     int input_num = 0;
     while (buf[input_num] != 0)
@@ -36,16 +36,15 @@ unsigned int GetInputCharNum()
         input_num += 1;
         buf[input_num] = GetCharPressed();
     }
-    buf[input_num + 1] = U'\0';
 
     s_InputTextNum = input_num;
-    memcpy(s_InputTextArray, buf, sizeof(wchar_t) * (s_InputTextNum + 1));
+    memcpy(s_InputTextArray, buf, sizeof(unsigned int) * (s_InputTextNum + 1));
 
     return s_InputTextNum;
 }
 
 //入力された文字を取得する
-void GetInputChar(wchar_t* input_text)
+void GetInputChar(unsigned int* input_text)
 {
-    memcpy(input_text, s_InputTextArray, sizeof(wchar_t) * (s_InputTextNum + 1));
+    memcpy(input_text, s_InputTextArray, sizeof(unsigned int) * (s_InputTextNum + 1));
 }

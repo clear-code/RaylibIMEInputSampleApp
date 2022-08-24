@@ -91,18 +91,11 @@ bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filename,
     return true;
 }
 
-int FreeTypeManager_ConvertUtf8toUtf32(wchar_t* out_wchar, const char* conv_char)
-{
-    return mbstowcs(out_wchar, conv_char, 1024);
-}
-
-Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const wchar_t* view_text)
+Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const unsigned int* view_text, unsigned int text_len)
 {
     //画像データ作成用
     unsigned char* data = (unsigned char*)ft_manager->m_ImageConf.data;
     memcpy(data, ft_manager->m_InitData, ft_manager->m_TextureWidth * ft_manager->m_TextureHeight * 4);
-
-    unsigned int text_len = wcslen(view_text);
 
     int error;
     FT_GlyphSlot slot;

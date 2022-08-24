@@ -22,7 +22,7 @@
 
 #define MAX_PREDIT_LEN 128
 
-static wchar_t s_PreeditArray[MAX_PREDIT_LEN];
+static unsigned int s_PreeditArray[MAX_PREDIT_LEN];
 static unsigned int s_PreeditLen = 0;
 
 static PreeditManager_OnPreeditChanged s_OnPreeditChanged;
@@ -45,9 +45,9 @@ void PreeditManager_SetOnPreeditChanged(PreeditManager_OnPreeditChanged onPreedi
     s_OnPreeditChanged = onPreeditChanged;
 }
 
-void PreeditManager_GetPreeditChar(wchar_t* input_text)
+void PreeditManager_GetPreeditChar(unsigned int* input_text)
 {
-    memcpy(input_text, s_PreeditArray, sizeof(wchar_t) * s_PreeditLen);
+    memcpy(input_text, s_PreeditArray, sizeof(unsigned int) * s_PreeditLen);
 }
 
 static void OnPreedit(int preeditLength, unsigned int* preeditString, int blockCount,
@@ -59,9 +59,8 @@ static void OnPreedit(int preeditLength, unsigned int* preeditString, int blockC
 
     if (preeditLength == 0 || blockCount == 0)
     {
-        s_PreeditArray[0] = U'\0';
         if (s_OnPreeditChanged != NULL)
-            s_OnPreeditChanged(s_PreeditArray);
+            s_OnPreeditChanged(s_PreeditArray, s_PreeditLen);
         return;
     }
 
@@ -91,8 +90,6 @@ static void OnPreedit(int preeditLength, unsigned int* preeditString, int blockC
     if (caret == preeditLength)
         s_PreeditArray[s_PreeditLen++] = U'|';
 
-    s_PreeditArray[s_PreeditLen++] = U'\0';
-
     if (s_OnPreeditChanged != NULL)
-        s_OnPreeditChanged(s_PreeditArray);
+        s_OnPreeditChanged(s_PreeditArray, s_PreeditLen);
 }
