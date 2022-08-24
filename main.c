@@ -33,6 +33,8 @@ int main(void)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+
     const int screenWidth = 800;
     const int screenHeight = 450;
 
