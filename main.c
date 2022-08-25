@@ -82,6 +82,12 @@ int main(void)
             key = GetCharPressed();
         }
 
+        if (IsKeyPressed(KEY_BACKSPACE) && unicode_points_num > 0)
+        {
+            unicode_points_num--;
+            has_text_updated = true;
+        }
+
         if (has_text_updated)
             texture = FreeTypeManager_OutputRaylibImage(&ftManager, unicode_points, unicode_points_num);
 
