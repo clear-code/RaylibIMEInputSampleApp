@@ -17,7 +17,8 @@
 
 #include "CFreeTypeManager.h"
 
-bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filepath,  int width, int height, int font_size)
+bool FreeTypeManager_Initialize(FreeTypeManager* ft_manager, char* font_filepath, int width,
+                               int height, int font_size)
 {
     setlocale(LC_CTYPE, "ja_JP");
 
@@ -86,7 +87,8 @@ bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filepath,
     return true;
 }
 
-Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const unsigned int* view_text, unsigned int text_len)
+Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const unsigned int* view_text,
+                                            unsigned int text_len, bool for_preedit)
 {
     //画像データ作成用
     unsigned char* data = (unsigned char*)ft_manager->m_ImageConf.data;
@@ -96,6 +98,7 @@ Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const u
     FT_GlyphSlot slot;
     int startBufferIndex = 0;           //文字を書き始める
     int writeWidthPixelNum = 0;         //現在描画完了している横幅
+    int writeHeightPixelNum = 0;
 
     //引数の文字の分だけグリフを取得して画像バッファに書き込む
     for (int glyfIndex = 0; glyfIndex < text_len; glyfIndex++ )
@@ -125,6 +128,7 @@ Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const u
             //描画スタート位置を次の行の先頭に
             writeWidthPixelNum = slot->bitmap_left;
             startBufferIndex += ft_manager->m_FontSize * ft_manager->m_TextureWidth * 4;
+            writeHeightPixelNum += ft_manager->m_FontSize;
         }
 
         //バッファにグリフの情報を書き込む
@@ -151,6 +155,12 @@ Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const u
 
         //次の文字の書き込み位置の計算
         writeWidthPixelNum += slot->bitmap.width;
+    }
+
+    if (!for_preedit)
+    {
+        ft_manager->m_CursorPosX = writeWidthPixelNum;
+        ft_manager->m_CursorPosY = writeHeightPixelNum;
     }
 
     return LoadTextureFromImage(ft_manager->m_ImageConf);

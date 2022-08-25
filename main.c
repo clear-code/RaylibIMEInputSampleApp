@@ -28,7 +28,7 @@ static Texture2D texturePreedit;
 
 static void OnPreeditChanged(unsigned int* preedit, unsigned int length)
 {
-    texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, preedit, length);
+    texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, preedit, length, true);
 }
 
 int main(void)
@@ -39,6 +39,8 @@ int main(void)
 
     const int screenWidth = 800;
     const int screenHeight = 450;
+    const int preeditWindowPosXOffset = 15;
+    const int preeditWindowPosYOffset = 5;
 
     InitWindow(screenWidth, screenHeight, "RaylibIMEInputSampleApp");
     // ToggleFullscreen();
@@ -47,7 +49,7 @@ int main(void)
     PreeditManager_UpdateWindowPos(10, 20);
     PreeditManager_SetOnPreeditChanged(OnPreeditChanged);
 
-    bool has_succeeded = FreeTypeManager_Initializ(&ftManager, FONT_FILEPATH, screenWidth, screenHeight, 16);
+    bool has_succeeded = FreeTypeManager_Initialize(&ftManager, FONT_FILEPATH, screenWidth, screenHeight, 16);
     if (!has_succeeded) {
         printf("FreeTypeManager_Initializ failed. Can't start the app.\n");
         return 1;
@@ -58,8 +60,8 @@ int main(void)
     unsigned int unicode_points[MAX_TEXT_NUM];
     unsigned int unicode_points_num = 0;
 
-    Texture2D texture = FreeTypeManager_OutputRaylibImage(&ftManager, U"", 0);
-    texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, U"", 0);
+    Texture2D texture = FreeTypeManager_OutputRaylibImage(&ftManager, U"", 0, false);
+    texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, U"", 0, true);
     //--------------------------------------------------------------------------------------
 
     // Main game loop
@@ -89,7 +91,11 @@ int main(void)
         }
 
         if (has_text_updated)
-            texture = FreeTypeManager_OutputRaylibImage(&ftManager, unicode_points, unicode_points_num);
+        {
+            texture = FreeTypeManager_OutputRaylibImage(&ftManager, unicode_points, unicode_points_num, false);
+            PreeditManager_UpdateWindowPos(ftManager.m_CursorPosX + preeditWindowPosXOffset,
+                                           ftManager.m_CursorPosY + ftManager.m_FontSize + preeditWindowPosYOffset);
+        }
 
         //----------------------------------------------------------------------------------
 
@@ -99,8 +105,8 @@ int main(void)
 
         ClearBackground(RAYWHITE);
 
-        DrawTexture(texturePreedit, 0, 0, WHITE);
-        DrawTexture(texture, 0, 20, WHITE);
+        DrawTexture(texture, 0, 0, WHITE);
+        DrawTexture(texturePreedit, ftManager.m_CursorPosX, ftManager.m_CursorPosY, WHITE);
 
         DrawFPS(700, 10);
 

@@ -33,25 +33,31 @@ typedef struct FreeTypeManager
     FT_Library m_ftLibrary;
     FT_Face m_ftFace;
 
-    //bitmapグリフ出力用の設定と渡す用のデータ
+    // bitmapグリフ出力用の設定と渡す用のデータ
     Image m_ImageConf;
 
-    //画像バッファ（初期化用）
+    // 画像バッファ（初期化用）
     unsigned char* m_InitData;
 
-    //グリフ設定
-    int m_FontSize;     //フォントサイズ
+    // グリフ設定
+    int m_FontSize;     // フォントサイズ
 
-    //ウィンドウサイズ
+    // ウィンドウサイズ
     int m_TextureWidth;
     int m_TextureHeight;
+
+    // カーソル位置
+    int m_CursorPosX;
+    int m_CursorPosY;
 } FreeTypeManager;
 
 //FreeTypeManagerの初期化
-bool FreeTypeManager_Initializ(FreeTypeManager* ft_manager, char* font_filepath, int width, int height, int font_size);
+bool FreeTypeManager_Initialize(FreeTypeManager* ft_manager, char* font_filepath, int width,
+                               int height, int font_size);
 
 //渡した文字列からTexture2Dを作成する
-Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const unsigned int* view_text, unsigned int text_len);
+Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const unsigned int* view_text,
+                                            unsigned int text_len, bool for_preedit);
 
 //フォントサイズ設定
 void FreeTypeManager_SetFontSize(FreeTypeManager* ft_manager, int font_size);
