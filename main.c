@@ -19,8 +19,9 @@
 
 #include "config.h"
 #include "CFreeTypeManager.h"
-#include "CheckCharInput.h"
 #include "PreeditManager.h"
+
+#define MAX_TEXT_NUM 1024
 
 static FreeTypeManager ftManager;
 static Texture2D texturePreedit;
@@ -54,7 +55,7 @@ int main(void)
 
     SetTargetFPS(30);               // Set our game to run at 60 frames-per-second
 
-    unsigned int unicode_points[1024];
+    unsigned int unicode_points[MAX_TEXT_NUM];
     unsigned int unicode_points_num = 0;
 
     Texture2D texture = FreeTypeManager_OutputRaylibImage(&ftManager, U"", 0);
@@ -67,17 +68,22 @@ int main(void)
         // Update
         //----------------------------------------------------------------------------------
 
-        unsigned int input_num = GetInputCharNum();
-        if (input_num > 0)
+        bool has_text_updated = false;
+
+        int key = GetCharPressed();
+        while (key > 0)
         {
-            unsigned int text[64];
-            GetInputChar(text);
+            if (key >= 32 && unicode_points_num < MAX_TEXT_NUM)
+            {
+                unicode_points[unicode_points_num++] = key;
+                has_text_updated = true;
+            }
 
-            for (int i = 0; i < input_num; ++i)
-                unicode_points[unicode_points_num++] = text[i];
-
-            texture = FreeTypeManager_OutputRaylibImage(&ftManager, unicode_points, unicode_points_num);
+            key = GetCharPressed();
         }
+
+        if (has_text_updated)
+            texture = FreeTypeManager_OutputRaylibImage(&ftManager, unicode_points, unicode_points_num);
 
         //----------------------------------------------------------------------------------
 

@@ -33,9 +33,6 @@ if (NOT WIN32)
 endif()
 
 
-add_library(CheckCharInput CheckCharInput.c)
-list(APPEND LIBS CheckCharInput)
-
 add_library(PreeditManager PreeditManager.c)
 list(APPEND LIBS PreeditManager)
 
@@ -78,9 +75,6 @@ if (WIN32)
         set(GLFW_LIBRARY "${GLFW}/lib/libglfw3.a")
     endif()
 
-    target_include_directories(CheckCharInput PRIVATE ${RAYLIB_INCLUDE_DIR})
-    target_link_libraries(CheckCharInput PRIVATE ${RAYLIB_LIBRARY})
-
     target_include_directories(PreeditManager PRIVATE ${RAYLIB_INCLUDE_DIR})
     target_link_libraries(PreeditManager PRIVATE ${RAYLIB_LIBRARY})
 
@@ -101,8 +95,6 @@ if (WIN32)
     endif()
 elseif (APPLE)
     message("For MacOS")
-
-    target_link_libraries(CheckCharInput PRIVATE raylib)
 
     target_link_libraries(PreeditManager PRIVATE raylib)
 
@@ -132,8 +124,6 @@ elseif (APPLE)
     )
 elseif (UNIX)
     message("For UNIX")
-
-    target_link_libraries(CheckCharInput PRIVATE raylib)
 
     target_link_libraries(PreeditManager PRIVATE raylib)
 
