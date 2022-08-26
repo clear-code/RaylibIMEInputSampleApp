@@ -40,6 +40,7 @@ add_library(CFreeTypeManager CFreeTypeManager.c)
 list(APPEND LIBS CFreeTypeManager)
 
 add_executable(RaylibIMEInputSampleApp MACOSX_BUNDLE main.c)
+target_include_directories(RaylibIMEInputSampleApp PRIVATE "./external/raygui")
 
 set(INSTALL_PATH "${CMAKE_INSTALL_PREFIX}/")
 set(RESOURCE_DIR ${INSTALL_PATH})

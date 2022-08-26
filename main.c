@@ -17,6 +17,9 @@
 
 #include "raylib.h"
 
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
+
 #include "config.h"
 #include "CFreeTypeManager.h"
 #include "PreeditManager.h"
@@ -31,6 +34,36 @@ static void OnPreeditChanged(unsigned int* preedit, unsigned int length)
     texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, preedit, length, true);
 }
 
+static void DrawPreeditUtils()
+{
+    int candidateWindowPosX;
+    int candidateWindowPosY;
+    GetPreeditWindowPosition(&candidateWindowPosX, &candidateWindowPosY);
+
+    bool isImeOn = IsImeOn();
+
+    int x = 10;
+    int y = 0;
+
+    if (isImeOn)
+        DrawText("IME status: ON", x, y, 20, BLACK);
+    else
+        DrawText("IME status: OFF", x, y, 20, BLACK);
+    y += 22;
+
+    DrawText(TextFormat("IME candidate window pos (x, y): (%d, %d)\n", candidateWindowPosX, candidateWindowPosY),
+             x, y, 20, BLACK);
+    y += 22;
+
+    y += 5;
+    if (GuiButton((Rectangle){ x, y, 200, 30 }, "Toggle IME Status"))
+        SetImeStatus(!isImeOn);
+
+    x += 210;
+    if (GuiButton((Rectangle){ x, y, 200, 30 }, "Reset Preedit"))
+        ResetPreedit();
+}
+
 int main(void)
 {
     // Initialization
@@ -39,21 +72,23 @@ int main(void)
 
     const int screenWidth = 800;
     const int screenHeight = 450;
+    const int editorStartY = 100;
     const int preeditWindowPosXOffset = 15;
     const int preeditWindowPosYOffset = 5;
 
     InitWindow(screenWidth, screenHeight, "RaylibIMEInputSampleApp");
     // ToggleFullscreen();
 
-    PreeditManager_Init();
-    PreeditManager_UpdateWindowPos(10, 20);
-    PreeditManager_SetOnPreeditChanged(OnPreeditChanged);
-
     bool has_succeeded = FreeTypeManager_Initialize(&ftManager, FONT_FILEPATH, screenWidth, screenHeight, 16);
     if (!has_succeeded) {
         printf("FreeTypeManager_Initializ failed. Can't start the app.\n");
         return 1;
     }
+
+    PreeditManager_Init();
+    PreeditManager_UpdateWindowPos(preeditWindowPosXOffset,
+                                   editorStartY + ftManager.m_FontSize + preeditWindowPosYOffset);
+    PreeditManager_SetOnPreeditChanged(OnPreeditChanged);
 
     SetTargetFPS(30);               // Set our game to run at 60 frames-per-second
 
@@ -94,7 +129,7 @@ int main(void)
         {
             texture = FreeTypeManager_OutputRaylibImage(&ftManager, unicode_points, unicode_points_num, false);
             PreeditManager_UpdateWindowPos(ftManager.m_CursorPosX + preeditWindowPosXOffset,
-                                           ftManager.m_CursorPosY + ftManager.m_FontSize + preeditWindowPosYOffset);
+                                           editorStartY + ftManager.m_CursorPosY + ftManager.m_FontSize + preeditWindowPosYOffset);
         }
 
         //----------------------------------------------------------------------------------
@@ -105,8 +140,9 @@ int main(void)
 
         ClearBackground(RAYWHITE);
 
-        DrawTexture(texture, 0, 0, WHITE);
-        DrawTexture(texturePreedit, ftManager.m_CursorPosX, ftManager.m_CursorPosY, WHITE);
+        DrawPreeditUtils();
+        DrawTexture(texture, 0, editorStartY, WHITE);
+        DrawTexture(texturePreedit, ftManager.m_CursorPosX, editorStartY + ftManager.m_CursorPosY, WHITE);
 
         DrawFPS(700, 10);
 
