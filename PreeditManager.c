@@ -25,6 +25,9 @@
 static unsigned int s_PreeditArray[MAX_PREDIT_LEN];
 static unsigned int s_PreeditLen = 0;
 
+static const int s_PreeditWindowPosXOffset = 15;
+static const int s_PreeditWindowPosYOffset = 5;
+
 static PreeditManager_OnPreeditChanged s_OnPreeditChanged;
 
 static void OnPreedit(int preeditLength, unsigned int* preeditString, int blockCount,
@@ -37,7 +40,7 @@ void PreeditManager_Init()
 
 void PreeditManager_UpdateWindowPos(int x, int y)
 {
-    SetPreeditWindowPosition(x, y);
+    SetPreeditWindowPosition(x + s_PreeditWindowPosXOffset, y + s_PreeditWindowPosYOffset);
 }
 
 void PreeditManager_SetOnPreeditChanged(PreeditManager_OnPreeditChanged onPreeditChanged)

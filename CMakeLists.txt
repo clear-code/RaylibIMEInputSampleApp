@@ -36,6 +36,9 @@ endif()
 add_library(PreeditManager PreeditManager.c)
 list(APPEND LIBS PreeditManager)
 
+add_library(TextEditor TextEditor.c)
+list(APPEND LIBS TextEditor)
+
 add_library(CFreeTypeManager CFreeTypeManager.c)
 list(APPEND LIBS CFreeTypeManager)
 
@@ -76,19 +79,23 @@ if (WIN32)
         set(GLFW_LIBRARY "${GLFW}/lib/libglfw3.a")
     endif()
 
+    list(APPEND RAYLIBS ${RAYLIB_LIBRARY})
+    if (USE_EXTERNAL_GLFW)
+        list(APPEND RAYLIBS ${GLFW_LIBRARY})
+    endif()
+
     target_include_directories(PreeditManager PRIVATE ${RAYLIB_INCLUDE_DIR})
-    target_link_libraries(PreeditManager PRIVATE ${RAYLIB_LIBRARY})
+    target_link_libraries(PreeditManager PRIVATE ${RAYLIBS})
 
     target_include_directories(CFreeTypeManager PUBLIC ${RAYLIB_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR})
-    target_link_libraries(CFreeTypeManager PUBLIC ${RAYLIB_LIBRARY} ${FREETYPE_LIBRARY})
+    target_link_libraries(CFreeTypeManager PUBLIC ${RAYLIBS} ${FREETYPE_LIBRARY})
+
+    target_include_directories(TextEditor PRIVATE ${RAYLIB_INCLUDE_DIR})
+    target_link_libraries(TextEditor PRIVATE ${RAYLIBS} PreeditManager CFreeTypeManager)
 
     target_include_directories(RaylibIMEInputSampleApp PRIVATE ${RAYLIB_INCLUDE_DIR})
 
-    list(APPEND LIBS ${RAYLIB_LIBRARY})
-    if (USE_EXTERNAL_GLFW)
-        list(APPEND LIBS ${GLFW_LIBRARY})
-    endif()
-    list(APPEND LIBS winmm)
+    list(APPEND LIBS ${RAYLIBS} winmm)
 
     list(APPEND DEPENDENCIES ${FREETYPE_LIBRARY})
     if (USE_EXTERNAL_GLFW)
@@ -97,23 +104,26 @@ if (WIN32)
 elseif (APPLE)
     message("For MacOS")
 
-    target_link_libraries(PreeditManager PRIVATE raylib)
+    list(APPEND RAYLIBS raylib)
+    if (USE_EXTERNAL_GLFW)
+        list(APPEND RAYLIBS glfw)
+    endif()
+
+    target_link_libraries(PreeditManager PRIVATE ${RAYLIBS})
 
     target_include_directories(CFreeTypeManager PUBLIC ${FREETYPE_INCLUDE_DIRS})
-    target_link_libraries(CFreeTypeManager PUBLIC raylib ${FREETYPE_LIBRARIES})
+    target_link_libraries(CFreeTypeManager PUBLIC ${RAYLIBS} ${FREETYPE_LIBRARIES})
+
+    target_link_libraries(TextEditor PRIVATE ${RAYLIBS} PreeditManager CFreeTypeManager)
 
     list(APPEND LIBS
-        raylib
-        ${FREETYPE_LIBRARIES}
+        ${RAYLIBS}
         "-framework Carbon"
         "-framework Cocoa"
         "-framework IOKit"
         "-framework CoreFoundation"
         "-framework OpenGL"
     )
-    if (USE_EXTERNAL_GLFW)
-        list(APPEND LIBS glfw)
-    endif()
 
     # Build as a macOS app bundle
     set(RESOURCE_DIR ${INSTALL_PATH}${CMAKE_PROJECT_NAME}.app/Contents/Resources/)
@@ -126,16 +136,19 @@ elseif (APPLE)
 elseif (UNIX)
     message("For UNIX")
 
-    target_link_libraries(PreeditManager PRIVATE raylib)
+    list(APPEND RAYLIBS raylib)
+    if (USE_EXTERNAL_GLFW)
+        list(APPEND RAYLIBS glfw)
+    endif()
+
+    target_link_libraries(PreeditManager PRIVATE ${RAYLIBS})
 
     target_include_directories(CFreeTypeManager PUBLIC ${FREETYPE_INCLUDE_DIRS})
-    target_link_libraries(CFreeTypeManager PUBLIC raylib freetype)
+    target_link_libraries(CFreeTypeManager PUBLIC ${RAYLIBS} freetype)
 
-    list(APPEND LIBS raylib freetype)
-    if (USE_EXTERNAL_GLFW)
-        list(APPEND LIBS glfw)
-    endif()
-    list(APPEND LIBS GL m pthread dl rt X11)
+    target_link_libraries(TextEditor PRIVATE ${RAYLIBS} PreeditManager CFreeTypeManager)
+
+    list(APPEND LIBS ${RAYLIBS} GL m pthread dl rt X11)
 endif()
 
 # Copy DEPENDENCIES to INSTALL_PATH

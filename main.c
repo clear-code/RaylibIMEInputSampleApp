@@ -21,18 +21,7 @@
 #include "raygui.h"
 
 #include "config.h"
-#include "CFreeTypeManager.h"
-#include "PreeditManager.h"
-
-#define MAX_TEXT_NUM 1024
-
-static FreeTypeManager ftManager;
-static Texture2D texturePreedit;
-
-static void OnPreeditChanged(unsigned int* preedit, unsigned int length)
-{
-    texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, preedit, length, true);
-}
+#include "TextEditor.h"
 
 static void DrawPreeditUtils()
 {
@@ -51,7 +40,7 @@ static void DrawPreeditUtils()
         DrawText("IME status: OFF", x, y, 20, BLACK);
     y += 22;
 
-    DrawText(TextFormat("IME candidate window pos (x, y): (%d, %d)\n", candidateWindowPosX, candidateWindowPosY),
+    DrawText(TextFormat("IME candidate window pos (x, y): (%d, %d)", candidateWindowPosX, candidateWindowPosY),
              x, y, 20, BLACK);
     y += 22;
 
@@ -73,30 +62,17 @@ int main(void)
     const int screenWidth = 800;
     const int screenHeight = 450;
     const int editorStartY = 100;
-    const int preeditWindowPosXOffset = 15;
-    const int preeditWindowPosYOffset = 5;
+    const int editorMargin = 10;
 
     InitWindow(screenWidth, screenHeight, "RaylibIMEInputSampleApp");
     // ToggleFullscreen();
 
-    bool has_succeeded = FreeTypeManager_Initialize(&ftManager, FONT_FILEPATH, screenWidth, screenHeight, 16);
-    if (!has_succeeded) {
-        printf("FreeTypeManager_Initializ failed. Can't start the app.\n");
-        return 1;
-    }
+    TextEditor_Init(editorMargin, editorStartY + editorMargin,
+                    screenWidth - 2 * editorMargin,
+                    screenHeight - editorStartY - 2 * editorMargin,
+                    FONT_FILEPATH);
 
-    PreeditManager_Init();
-    PreeditManager_UpdateWindowPos(preeditWindowPosXOffset,
-                                   editorStartY + ftManager.m_FontSize + preeditWindowPosYOffset);
-    PreeditManager_SetOnPreeditChanged(OnPreeditChanged);
-
-    SetTargetFPS(30);               // Set our game to run at 60 frames-per-second
-
-    unsigned int unicode_points[MAX_TEXT_NUM];
-    unsigned int unicode_points_num = 0;
-
-    Texture2D texture = FreeTypeManager_OutputRaylibImage(&ftManager, U"", 0, false);
-    texturePreedit = FreeTypeManager_OutputRaylibImage(&ftManager, U"", 0, true);
+    SetTargetFPS(30); 
     //--------------------------------------------------------------------------------------
 
     // Main game loop
@@ -104,34 +80,7 @@ int main(void)
     {
         // Update
         //----------------------------------------------------------------------------------
-
-        bool has_text_updated = false;
-
-        int key = GetCharPressed();
-        while (key > 0)
-        {
-            if (key >= 32 && unicode_points_num < MAX_TEXT_NUM)
-            {
-                unicode_points[unicode_points_num++] = key;
-                has_text_updated = true;
-            }
-
-            key = GetCharPressed();
-        }
-
-        if (IsKeyPressed(KEY_BACKSPACE) && unicode_points_num > 0)
-        {
-            unicode_points_num--;
-            has_text_updated = true;
-        }
-
-        if (has_text_updated)
-        {
-            texture = FreeTypeManager_OutputRaylibImage(&ftManager, unicode_points, unicode_points_num, false);
-            PreeditManager_UpdateWindowPos(ftManager.m_CursorPosX + preeditWindowPosXOffset,
-                                           editorStartY + ftManager.m_CursorPosY + ftManager.m_FontSize + preeditWindowPosYOffset);
-        }
-
+        TextEditor_Update();
         //----------------------------------------------------------------------------------
 
         // Draw
@@ -141,8 +90,7 @@ int main(void)
         ClearBackground(RAYWHITE);
 
         DrawPreeditUtils();
-        DrawTexture(texture, 0, editorStartY, WHITE);
-        DrawTexture(texturePreedit, ftManager.m_CursorPosX, editorStartY + ftManager.m_CursorPosY, WHITE);
+        TextEditor_Draw();
 
         DrawFPS(700, 10);
 
