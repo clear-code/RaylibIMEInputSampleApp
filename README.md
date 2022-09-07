@@ -2,7 +2,7 @@
 
 This is a sample application for Japanese input with [raylib](https://github.com/raysan5/raylib).
 
-![image](doc/image.png)
+<img src="doc/sample.gif">
 
 # How to build and run
 
