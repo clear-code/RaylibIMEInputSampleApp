@@ -16,12 +16,40 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "raylib.h"
+#include <string.h>
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
 #include "config.h"
 #include "TextEditor.h"
+
+static bool ParseArgs(int argc, char** argv)
+{
+    for (int i = 1; i < argc; ++i)
+    {
+        if (strcmp(argv[i], "-f") == 0)
+        {
+            printf("Fullscreen.\n");
+            SetConfigFlags(FLAG_FULLSCREEN_MODE);
+            continue;
+        }
+
+        if (strcmp(argv[i], "-r") == 0)
+        {
+            printf("Resizable.\n");
+            SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+            continue;
+        }
+
+        printf("Options:\n");
+        printf("  -f use full screen\n");
+        printf("  -r make window resizable\n");
+        return false;
+    }
+
+    return true;
+}
 
 static void DrawPreeditUtils()
 {
@@ -57,11 +85,12 @@ static void DrawPreeditUtils()
         ToggleFullscreen();
 }
 
-int main(void)
+int main(int argc, char** argv)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    if (!ParseArgs(argc, argv))
+        return -1;
 
     const int screenWidth = 800;
     const int screenHeight = 450;
