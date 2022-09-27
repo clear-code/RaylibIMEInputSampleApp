@@ -51,6 +51,10 @@ static void DrawPreeditUtils()
     x += 210;
     if (GuiButton((Rectangle){ x, y, 200, 30 }, "Reset Preedit"))
         ResetPreedit();
+
+    x += 210;
+    if (GuiButton((Rectangle){ x, y, 200, 30 }, "Toggle Fullscreen"))
+        ToggleFullscreen();
 }
 
 int main(void)
@@ -65,7 +69,6 @@ int main(void)
     const int editorMargin = 10;
 
     InitWindow(screenWidth, screenHeight, "RaylibIMEInputSampleApp");
-    // ToggleFullscreen();
 
     TextEditor_Init(editorMargin, editorStartY + editorMargin,
                     screenWidth - 2 * editorMargin,
