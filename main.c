@@ -24,6 +24,15 @@
 #include "config.h"
 #include "TextEditor.h"
 
+static bool s_InitAsFullscreen = false;
+
+static int s_ScreenWidth = 800;
+static int s_ScreenHeight = 450;
+// The sizes of the screen as windowed (not fullscreened).
+// Used for toggling windowed/fullscreened.
+static int s_WindowedWidth = 800;
+static int s_WindowedHeight = 450;
+
 static bool ParseArgs(int argc, char** argv)
 {
     for (int i = 1; i < argc; ++i)
@@ -31,6 +40,7 @@ static bool ParseArgs(int argc, char** argv)
         if (strcmp(argv[i], "-f") == 0)
         {
             printf("Fullscreen.\n");
+            s_InitAsFullscreen = true;
             SetConfigFlags(FLAG_FULLSCREEN_MODE);
             continue;
         }
@@ -60,7 +70,11 @@ static void DrawPreeditUtils()
     bool isImeOn = IsImeOn();
 
     int x = 10;
-    int y = 0;
+    int y = 5;
+
+    DrawText(TextFormat("Screen Size (w, h): (%d, %d)", s_ScreenWidth, s_ScreenHeight),
+             x, y, 20, BLACK);
+    y += 22;
 
     if (isImeOn)
         DrawText("IME status: ON", x, y, 20, BLACK);
@@ -82,7 +96,22 @@ static void DrawPreeditUtils()
 
     x += 210;
     if (GuiButton((Rectangle){ x, y, 200, 30 }, "Toggle Fullscreen"))
-        ToggleFullscreen();
+    {
+        // TODO toggling fullscreened/windowed doesn't work correctly.
+        if (IsWindowFullscreen())
+        {
+            ToggleFullscreen();
+            SetWindowSize(s_WindowedWidth, s_WindowedHeight);
+        }
+        else
+        {
+            const int monitorIndex = GetCurrentMonitor();
+            SetWindowSize(GetMonitorWidth(monitorIndex), GetMonitorHeight(monitorIndex));
+            ToggleFullscreen();
+        }
+        s_ScreenWidth = GetScreenWidth();
+        s_ScreenHeight = GetScreenHeight();
+    }
 }
 
 int main(int argc, char** argv)
@@ -92,16 +121,21 @@ int main(int argc, char** argv)
     if (!ParseArgs(argc, argv))
         return -1;
 
-    const int screenWidth = 800;
-    const int screenHeight = 450;
-    const int editorStartY = 100;
+    const int editorStartY = 125;
     const int editorMargin = 10;
 
-    InitWindow(screenWidth, screenHeight, "RaylibIMEInputSampleApp");
+    if (!s_InitAsFullscreen)
+        InitWindow(s_ScreenWidth, s_ScreenHeight, "RaylibIMEInputSampleApp");
+    else
+    {
+        InitWindow(0, 0, "RaylibIMEInputSampleApp");
+        s_ScreenWidth = GetScreenWidth();
+        s_ScreenHeight = GetScreenHeight();
+    }
 
     TextEditor_Init(editorMargin, editorStartY + editorMargin,
-                    screenWidth - 2 * editorMargin,
-                    screenHeight - editorStartY - 2 * editorMargin,
+                    s_ScreenWidth - 2 * editorMargin,
+                    s_ScreenHeight - editorStartY - 2 * editorMargin,
                     FONT_FILEPATH);
 
     SetTargetFPS(30); 
