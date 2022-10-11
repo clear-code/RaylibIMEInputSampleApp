@@ -124,6 +124,8 @@ int main(int argc, char** argv)
     const int editorStartY = 125;
     const int editorMargin = 10;
 
+    SetConfigFlags(FLAG_SOFT_FULLSCREEN);
+
     if (!s_InitAsFullscreen)
         InitWindow(s_ScreenWidth, s_ScreenHeight, "RaylibIMEInputSampleApp");
     else
