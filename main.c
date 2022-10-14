@@ -33,6 +33,11 @@ static int s_ScreenHeight = 450;
 static int s_WindowedWidth = 800;
 static int s_WindowedHeight = 450;
 
+// Call "ToggleFullscreen" after this frame count.
+// On X11, updating the window size is not applied in the same frame,
+// so need this to toggle to the fullscreen with the specified size.
+static int s_DelayFrameCountToFullscreen = 0;
+
 static bool ParseArgs(int argc, char** argv)
 {
     for (int i = 1; i < argc; ++i)
@@ -59,6 +64,13 @@ static bool ParseArgs(int argc, char** argv)
     }
 
     return true;
+}
+
+static bool IsTogglingFullscreen()
+{
+    if (s_DelayFrameCountToFullscreen > 0)
+        return true;
+    return false;
 }
 
 static void DrawPreeditUtils()
@@ -97,20 +109,22 @@ static void DrawPreeditUtils()
     x += 210;
     if (GuiButton((Rectangle){ x, y, 200, 30 }, "Toggle Fullscreen"))
     {
-        // TODO toggling fullscreened/windowed doesn't work correctly.
-        if (IsWindowFullscreen())
+        if (!IsTogglingFullscreen())
         {
-            ToggleFullscreen();
-            SetWindowSize(s_WindowedWidth, s_WindowedHeight);
+            if (IsWindowFullscreen())
+            {
+                ToggleFullscreen();
+                SetWindowSize(s_WindowedWidth, s_WindowedHeight);
+            }
+            else
+            {
+                const int monitorIndex = GetCurrentMonitor();
+                SetWindowSize(GetMonitorWidth(monitorIndex), GetMonitorHeight(monitorIndex));
+                // On X11, updating the window size is not applied in the same frame,
+                // so need to call "ToggleFullscreen" after some frames.
+                s_DelayFrameCountToFullscreen = 3;
+            }
         }
-        else
-        {
-            const int monitorIndex = GetCurrentMonitor();
-            SetWindowSize(GetMonitorWidth(monitorIndex), GetMonitorHeight(monitorIndex));
-            ToggleFullscreen();
-        }
-        s_ScreenWidth = GetScreenWidth();
-        s_ScreenHeight = GetScreenHeight();
     }
 }
 
@@ -148,6 +162,12 @@ int main(int argc, char** argv)
     {
         // Update
         //----------------------------------------------------------------------------------
+        if (s_DelayFrameCountToFullscreen > 0 && --s_DelayFrameCountToFullscreen == 0)
+            ToggleFullscreen();
+
+        s_ScreenWidth = GetScreenWidth();
+        s_ScreenHeight = GetScreenHeight();
+
         TextEditor_Update();
         //----------------------------------------------------------------------------------
 
