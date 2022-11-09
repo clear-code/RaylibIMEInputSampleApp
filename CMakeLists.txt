@@ -55,6 +55,8 @@ list(APPEND DEPENDENCIES ${RESOUCE_FILES})
 if (WIN32)
     message("For Windows")
 
+    option(MANAGE_PREEDIT_CANDIDATE "Manage the drawing of preedit candidates by the app side." OFF)
+
     set(RAYLIB "" CACHE STRING "The path of raylib binaries")
     if (NOT EXISTS ${RAYLIB})
         message(FATAL_ERROR "Not found raylib path: ${RAYLIB}. Must specify `RAYLIB` argument correctly.")
@@ -159,6 +161,9 @@ target_link_libraries(RaylibIMEInputSampleApp PRIVATE ${LIBS})
 target_sources(RaylibIMEInputSampleApp PRIVATE ${DEPENDENCIES})
 
 configure_file(config.h.in config.h)
+target_include_directories(PreeditManager PRIVATE ${PROJECT_BINARY_DIR})
+target_include_directories(TextureManager PRIVATE ${PROJECT_BINARY_DIR})
+target_include_directories(TextEditor PRIVATE ${PROJECT_BINARY_DIR})
 target_include_directories(RaylibIMEInputSampleApp PUBLIC ${PROJECT_BINARY_DIR})
 
 install(TARGETS RaylibIMEInputSampleApp DESTINATION ${INSTALL_PATH})

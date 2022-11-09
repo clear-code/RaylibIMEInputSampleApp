@@ -20,6 +20,8 @@
 
 #include <stdio.h>
 
+#include "config.h"
+
 typedef void (*PreeditManager_OnPreeditChanged)(int* preedit, int length);
 
 void PreeditManager_Init();
@@ -29,5 +31,10 @@ void PreeditManager_UpdateWindowPos(int x, int y);
 void PreeditManager_SetOnPreeditChanged(PreeditManager_OnPreeditChanged onPreeditChanged);
 
 void PreeditManager_GetPreeditText(int* text);
+
+#ifdef MANAGE_PREEDIT_CANDIDATE
+    typedef void (*PreeditManager_OnPreeditCandidateChanged)(int** candidates, int* lengths, int pageSize, int selectedIndex);
+    void PreeditManager_SetOnPreeditCandidateChanged(PreeditManager_OnPreeditCandidateChanged onPreeditCandidateChanged);
+#endif
 
 #endif /* PreeditManager_h */

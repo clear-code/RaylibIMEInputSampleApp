@@ -141,6 +141,9 @@ int main(int argc, char** argv)
 #ifdef USE_SOFT_FULLSCREEN
     SetConfigFlags(FLAG_SOFT_FULLSCREEN);
 #endif
+#ifdef MANAGE_PREEDIT_CANDIDATE
+    SetConfigFlags(FLAG_MANAGE_PREEDIT_CANDIDATE);
+#endif
 
     if (!s_InitAsFullscreen)
         InitWindow(s_ScreenWidth, s_ScreenHeight, "RaylibIMEInputSampleApp");

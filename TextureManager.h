@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <locale.h>
 
+#include "config.h"
 #include <ft2build.h>
 
 #include FT_FREETYPE_H
@@ -56,5 +57,10 @@ typedef struct TextureManager
 bool TextureManager_Initialize(TextureManager* manager, const char* fontFilepath, int width, int height, int fontSize);
 
 Texture2D TextureManager_CreateTexture(TextureManager* manager, const int* text, int textLength);
+
+#ifdef MANAGE_PREEDIT_CANDIDATE
+    Texture2D TextureManager_CreateTextureForCandidate(TextureManager* manager, int** candidates, int* lengths,
+                                                       int page_size, int selected_index);
+#endif
 
 #endif /* TextureManager_h */

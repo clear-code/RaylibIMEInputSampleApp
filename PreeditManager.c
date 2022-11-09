@@ -33,9 +33,21 @@ static PreeditManager_OnPreeditChanged s_OnPreeditChanged;
 static void OnPreedit(int preeditLength, int* preeditString, int blockCount,
                       int* blockSizes, int focusedBlock, int caret);
 
+#ifdef MANAGE_PREEDIT_CANDIDATE
+    #define MAX_CANDIDATE_PAGE_SIZE 10
+    static int* s_CandidateTextsArray[MAX_CANDIDATE_PAGE_SIZE];
+    static int s_CandidateTextLengths[MAX_CANDIDATE_PAGE_SIZE];
+    static PreeditManager_OnPreeditCandidateChanged s_OnPreeditCandidateChanged;
+    static void OnPreeditCandidate(int candidatesCount, int selectedIndex, int pageStart, int pageSize);
+#endif
+
 void PreeditManager_Init()
 {
     SetPreeditCallback(OnPreedit);
+
+#ifdef MANAGE_PREEDIT_CANDIDATE
+    SetPreeditCandidateCallback(OnPreeditCandidate);
+#endif
 }
 
 void PreeditManager_UpdateWindowPos(int x, int y)
@@ -96,3 +108,36 @@ static void OnPreedit(int preeditLength, int* preeditString, int blockCount,
     if (s_OnPreeditChanged != NULL)
         s_OnPreeditChanged(s_PreeditArray, s_PreeditLen);
 }
+
+#ifdef MANAGE_PREEDIT_CANDIDATE
+    void PreeditManager_SetOnPreeditCandidateChanged(PreeditManager_OnPreeditCandidateChanged onPreeditCandidateChanged)
+    {
+        s_OnPreeditCandidateChanged = onPreeditCandidateChanged;
+    }
+
+    static void OnPreeditCandidate(int candidatesCount, int selectedIndex, int pageStart, int pageSize)
+    {
+        int i, j;
+        int selectedIndexInThePage;
+
+        if (MAX_CANDIDATE_PAGE_SIZE < pageSize)
+        {
+            printf("Too large candidate page size: %d. Stop processing the candidates.\n", pageSize);
+            return;
+        }
+
+        for (i = 0; i < pageSize; ++i)
+        {
+            int index = i + pageStart;
+            int textCount;
+            int* text = GetPreeditCandidate(index, &textCount);
+            s_CandidateTextsArray[i] = text;
+            s_CandidateTextLengths[i] = textCount;
+            if (selectedIndex == index)
+                selectedIndexInThePage = i;
+        }
+
+        if (s_OnPreeditCandidateChanged != NULL)
+            s_OnPreeditCandidateChanged(s_CandidateTextsArray, s_CandidateTextLengths, pageSize, selectedIndexInThePage);
+    }
+#endif

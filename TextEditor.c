@@ -41,6 +41,15 @@ static Texture2D s_TexturePreedit;
 
 static bool s_NeedToUpdateTexture = false;
 
+#ifdef MANAGE_PREEDIT_CANDIDATE
+    static TextureManager s_TextureManagerForCandidate;
+    static Texture2D s_TexturePreeditCandidate;
+    static void OnPreeditCandidateChanged(int** candidates, int* lengths, int pageSize, int selectedIndex)
+    {
+        s_TexturePreeditCandidate = TextureManager_CreateTextureForCandidate(&s_TextureManagerForCandidate, candidates, lengths, pageSize, selectedIndex);
+    }
+#endif
+
 static void OnPreeditChanged(int* preedit, int length)
 {
     s_TexturePreedit = TextureManager_CreateTexture(&s_TextureManagerForPreedit, preedit, length);
@@ -70,6 +79,16 @@ bool TextEditor_Init(int posX, int posY, int width, int height, const char* font
     PreeditManager_Init();
     PreeditManager_UpdateWindowPos(s_PosX, s_PosY + s_FontSize);
     PreeditManager_SetOnPreeditChanged(OnPreeditChanged);
+
+#ifdef MANAGE_PREEDIT_CANDIDATE
+    has_succeeded = TextureManager_Initialize(&s_TextureManagerForCandidate, fontFilepath, 400, 400, s_FontSize);
+    if (!has_succeeded) {
+        printf("Error: TextureManager failed to initialize.\n");
+        return false;
+    }
+
+    PreeditManager_SetOnPreeditCandidateChanged(OnPreeditCandidateChanged);
+#endif
 
     return true;
 }
@@ -111,4 +130,11 @@ void TextEditor_Draw()
                 s_PosX + s_TextureManagerForCommitted.m_CursorPosX,
                 s_PosY + s_TextureManagerForCommitted.m_CursorPosY,
                 WHITE);
+
+#ifdef MANAGE_PREEDIT_CANDIDATE
+    DrawTexture(s_TexturePreeditCandidate,
+                s_PosX + s_TextureManagerForCommitted.m_CursorPosX,
+                s_PosY + s_TextureManagerForCommitted.m_CursorPosY + s_FontSize + 10,
+                WHITE);
+#endif
 }

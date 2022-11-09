@@ -21,6 +21,8 @@
 #include "raylib.h"
 #include <stdio.h>
 
+#include "config.h"
+
 bool TextEditor_Init(int posX, int posY, int width, int height, const char* fontFilepath);
 
 void TextEditor_Update();

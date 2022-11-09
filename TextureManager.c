@@ -18,7 +18,7 @@
 #include "TextureManager.h"
 
 static unsigned int NumOfPixelsInOneRow(TextureManager* manager);
-static void WriteOneChar(TextureManager* manager, unsigned char* data, int character);
+static void WriteOneChar(TextureManager* manager, unsigned char* data, int character, bool wordWrap);
 
 bool TextureManager_Initialize(TextureManager* manager, const char* fontFilepath, int width, int height, int fontSize)
 {
@@ -85,7 +85,7 @@ Texture2D TextureManager_CreateTexture(TextureManager* manager, const int* text,
 
     // 1文字ずつ画像バッファに書き込む
     for (int i = 0; i < textLength; ++i)
-        WriteOneChar(manager, data, text[i]);
+        WriteOneChar(manager, data, text[i], true);
 
     // TODO カーソル位置を動かせるようにする場合は、ここの計算処理も改良する
     manager->m_CursorPosX = manager->m_currentX;
@@ -94,12 +94,47 @@ Texture2D TextureManager_CreateTexture(TextureManager* manager, const int* text,
     return LoadTextureFromImage(manager->m_Image);
 }
 
+#ifdef MANAGE_PREEDIT_CANDIDATE
+    Texture2D TextureManager_CreateTextureForCandidate(TextureManager* manager, int** candidates, int* lengths,
+                                                       int page_size, int selected_index)
+    {
+        // 画像データ初期化
+        unsigned char* data = (unsigned char*)manager->m_Image.data;
+        memcpy(data, manager->m_InitData, manager->m_TextureWidth * manager->m_TextureHeight * 4);
+
+        manager->m_currentX = 0;
+        manager->m_currentRow = 0;
+
+        for (int index = 0; index < page_size; ++index)
+        {
+            if (index == selected_index)
+            {
+                WriteOneChar(manager, data, '>', false);
+                WriteOneChar(manager, data, '>', false);
+            }
+
+            const int* text = candidates[index];
+            for (int i = 0; i < lengths[index]; ++i)
+                WriteOneChar(manager, data, text[i], false);
+
+            manager->m_currentRow++;
+            manager->m_currentX = 0;
+        }
+
+        // 使い道を想定していないが、とりあえず終端の位置にしておく
+        manager->m_CursorPosX = manager->m_currentX;
+        manager->m_CursorPosY = manager->m_currentRow * manager->m_FontSize;
+
+        return LoadTextureFromImage(manager->m_Image);
+    }
+#endif
+
 static unsigned int NumOfPixelsInOneRow(TextureManager* manager)
 {
     return manager->m_FontSize * manager->m_TextureWidth;
 }
 
-static void WriteOneChar(TextureManager* manager, unsigned char* data, int character)
+static void WriteOneChar(TextureManager* manager, unsigned char* data, int character, bool wordWrap)
 {
     // グリフを読み込み
     int error = FT_Load_Char(manager->m_ftFace, character, FT_LOAD_RENDER);
@@ -114,12 +149,15 @@ static void WriteOneChar(TextureManager* manager, unsigned char* data, int chara
     // 文字を表示する横幅の調整
     manager->m_currentX += slot->bitmap_left;
 
-    // テクスチャ幅をオーバーする場合は先に改行しておく
-    if (manager->m_currentX + slot->bitmap.width >= manager->m_TextureWidth)
+    if (wordWrap)
     {
-        manager->m_currentRow++;
-        //描画スタート位置を次の行の先頭に
-        manager->m_currentX = slot->bitmap_left;
+        // テクスチャ幅をオーバーする場合は先に改行しておく
+        if (manager->m_currentX + slot->bitmap.width >= manager->m_TextureWidth)
+        {
+            manager->m_currentRow++;
+            //描画スタート位置を次の行の先頭に
+            manager->m_currentX = slot->bitmap_left;
+        }
     }
 
     // この文字を書き込むべきオフセット位置
