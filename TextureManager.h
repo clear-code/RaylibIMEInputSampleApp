@@ -47,10 +47,14 @@ typedef struct TextureManager
     // Currently, the cursor is always at the end of the text.
     int m_CursorPosX;
     int m_CursorPosY;
+
+    // Use to create texture
+    int m_currentX; // 現在何行目の描画をしているか
+    int m_currentRow; // 現在の横方向描画位置(ピクセル)
 } TextureManager;
 
-bool TextureManager_Initialize(TextureManager* textureManager, const char* fontFilepath, int width, int height, int fontSize);
+bool TextureManager_Initialize(TextureManager* manager, const char* fontFilepath, int width, int height, int fontSize);
 
-Texture2D TextureManager_CreateTexture(TextureManager* textureManager, const int* text, int textLength);
+Texture2D TextureManager_CreateTexture(TextureManager* manager, const int* text, int textLength);
 
 #endif /* TextureManager_h */
