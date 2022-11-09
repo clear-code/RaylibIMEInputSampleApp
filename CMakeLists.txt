@@ -39,8 +39,8 @@ list(APPEND LIBS PreeditManager)
 add_library(TextEditor TextEditor.c)
 list(APPEND LIBS TextEditor)
 
-add_library(CFreeTypeManager CFreeTypeManager.c)
-list(APPEND LIBS CFreeTypeManager)
+add_library(TextureManager TextureManager.c)
+list(APPEND LIBS TextureManager)
 
 add_executable(RaylibIMEInputSampleApp MACOSX_BUNDLE main.c)
 target_include_directories(RaylibIMEInputSampleApp PRIVATE "./external/raygui")
@@ -87,11 +87,11 @@ if (WIN32)
     target_include_directories(PreeditManager PRIVATE ${RAYLIB_INCLUDE_DIR})
     target_link_libraries(PreeditManager PRIVATE ${RAYLIBS})
 
-    target_include_directories(CFreeTypeManager PUBLIC ${RAYLIB_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR})
-    target_link_libraries(CFreeTypeManager PUBLIC ${RAYLIBS} ${FREETYPE_LIBRARY})
+    target_include_directories(TextureManager PUBLIC ${RAYLIB_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR})
+    target_link_libraries(TextureManager PUBLIC ${RAYLIBS} ${FREETYPE_LIBRARY})
 
     target_include_directories(TextEditor PRIVATE ${RAYLIB_INCLUDE_DIR})
-    target_link_libraries(TextEditor PRIVATE ${RAYLIBS} PreeditManager CFreeTypeManager)
+    target_link_libraries(TextEditor PRIVATE ${RAYLIBS} PreeditManager TextureManager)
 
     target_include_directories(RaylibIMEInputSampleApp PRIVATE ${RAYLIB_INCLUDE_DIR})
 
@@ -111,10 +111,10 @@ elseif (APPLE)
 
     target_link_libraries(PreeditManager PRIVATE ${RAYLIBS})
 
-    target_include_directories(CFreeTypeManager PUBLIC ${FREETYPE_INCLUDE_DIRS})
-    target_link_libraries(CFreeTypeManager PUBLIC ${RAYLIBS} ${FREETYPE_LIBRARIES})
+    target_include_directories(TextureManager PUBLIC ${FREETYPE_INCLUDE_DIRS})
+    target_link_libraries(TextureManager PUBLIC ${RAYLIBS} ${FREETYPE_LIBRARIES})
 
-    target_link_libraries(TextEditor PRIVATE ${RAYLIBS} PreeditManager CFreeTypeManager)
+    target_link_libraries(TextEditor PRIVATE ${RAYLIBS} PreeditManager TextureManager)
 
     list(APPEND LIBS
         ${RAYLIBS}
@@ -143,10 +143,10 @@ elseif (UNIX)
 
     target_link_libraries(PreeditManager PRIVATE ${RAYLIBS})
 
-    target_include_directories(CFreeTypeManager PUBLIC ${FREETYPE_INCLUDE_DIRS})
-    target_link_libraries(CFreeTypeManager PUBLIC ${RAYLIBS} freetype)
+    target_include_directories(TextureManager PUBLIC ${FREETYPE_INCLUDE_DIRS})
+    target_link_libraries(TextureManager PUBLIC ${RAYLIBS} freetype)
 
-    target_link_libraries(TextEditor PRIVATE ${RAYLIBS} PreeditManager CFreeTypeManager)
+    target_link_libraries(TextEditor PRIVATE ${RAYLIBS} PreeditManager TextureManager)
 
     list(APPEND LIBS ${RAYLIBS} GL m pthread dl rt X11)
 endif()

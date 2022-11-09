@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef CFreeTypeManager_h
-#define CFreeTypeManager_h
+#ifndef TextureManager_h
+#define TextureManager_h
 
 #include "raylib.h"
 #include <stdio.h>
@@ -28,7 +28,7 @@
 
 #include FT_FREETYPE_H
 
-typedef struct FreeTypeManager
+typedef struct TextureManager
 {
     FT_Library m_ftLibrary;
     FT_Face m_ftFace;
@@ -47,10 +47,10 @@ typedef struct FreeTypeManager
     // Currently, the cursor is always at the end of the text.
     int m_CursorPosX;
     int m_CursorPosY;
-} FreeTypeManager;
+} TextureManager;
 
-bool FreeTypeManager_Initialize(FreeTypeManager* ftManager, const char* fontFilepath, int width, int height, int fontSize);
+bool TextureManager_Initialize(TextureManager* textureManager, const char* fontFilepath, int width, int height, int fontSize);
 
-Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ftManager, const int* text, int textLength, bool forPreedit);
+Texture2D TextureManager_OutputRaylibImage(TextureManager* textureManager, const int* text, int textLength, bool forPreedit);
 
-#endif /* CFreeTypeManager_h */
+#endif /* TextureManager_h */

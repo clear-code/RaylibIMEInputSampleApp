@@ -17,7 +17,7 @@
 
 #include "TextEditor.h"
 
-#include "CFreeTypeManager.h"
+#include "TextureManager.h"
 #include "PreeditManager.h"
 
 #define MAX_TEXT_NUM 1024
@@ -27,7 +27,7 @@ static int s_PosY;
 static int s_Width;
 static int s_Height;
 
-static FreeTypeManager s_FtManager;
+static TextureManager s_FtManager;
 
 static int s_TextCommitted[MAX_TEXT_NUM];
 static int s_TextCommittedNum = 0;
@@ -39,7 +39,7 @@ static bool s_NeedToUpdateTexture = false;
 
 static void OnPreeditChanged(int* preedit, int length)
 {
-    s_TexturePreedit = FreeTypeManager_OutputRaylibImage(&s_FtManager, preedit, length, true);
+    s_TexturePreedit = TextureManager_OutputRaylibImage(&s_FtManager, preedit, length, true);
 }
 
 bool TextEditor_Init(int posX, int posY, int width, int height, const char* fontFilepath)
@@ -49,14 +49,14 @@ bool TextEditor_Init(int posX, int posY, int width, int height, const char* font
     s_Width = width;
     s_Height = height;
 
-    bool has_succeeded = FreeTypeManager_Initialize(&s_FtManager, fontFilepath, s_Width, s_Height, 16);
+    bool has_succeeded = TextureManager_Initialize(&s_FtManager, fontFilepath, s_Width, s_Height, 16);
     if (!has_succeeded) {
-        printf("Error: FreeTypeManager failed to initialize.\n");
+        printf("Error: TextureManager failed to initialize.\n");
         return false;
     }
 
-    s_TextureCommitted = FreeTypeManager_OutputRaylibImage(&s_FtManager, U"", 0, false);
-    s_TexturePreedit = FreeTypeManager_OutputRaylibImage(&s_FtManager, U"", 0, true);
+    s_TextureCommitted = TextureManager_OutputRaylibImage(&s_FtManager, U"", 0, false);
+    s_TexturePreedit = TextureManager_OutputRaylibImage(&s_FtManager, U"", 0, true);
 
     PreeditManager_Init();
     PreeditManager_UpdateWindowPos(s_PosX, s_PosY + s_FtManager.m_FontSize);
@@ -90,7 +90,7 @@ void TextEditor_Draw()
 {
     if (s_NeedToUpdateTexture)
     {
-        s_TextureCommitted = FreeTypeManager_OutputRaylibImage(&s_FtManager, s_TextCommitted,
+        s_TextureCommitted = TextureManager_OutputRaylibImage(&s_FtManager, s_TextCommitted,
                                                                s_TextCommittedNum, false);
         PreeditManager_UpdateWindowPos(s_PosX + s_FtManager.m_CursorPosX,
                                        s_PosY + s_FtManager.m_CursorPosY + s_FtManager.m_FontSize);
