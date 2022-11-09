@@ -22,7 +22,7 @@ project(RaylibIMEInputSampleApp VERSION 0.1.0 LANGUAGES C)
 
 
 option(USE_EXTERNAL_GLFW "Use raylib built with external GLFW. GLFW package needs to be found." OFF)
-
+option(USE_SOFT_FULLSCREEN "Use soft-fullscreen feature of raylib." OFF)
 
 if (NOT WIN32)
     find_package(raylib REQUIRED)
