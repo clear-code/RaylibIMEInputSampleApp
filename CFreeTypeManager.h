@@ -44,18 +44,13 @@ typedef struct FreeTypeManager
     int m_TextureWidth;
     int m_TextureHeight;
 
+    // Currently, the cursor is always at the end of the text.
     int m_CursorPosX;
     int m_CursorPosY;
 } FreeTypeManager;
 
-bool FreeTypeManager_Initialize(FreeTypeManager* ftManager, const char* fontFilepath, int width,
-                               int height, int fontSize);
+bool FreeTypeManager_Initialize(FreeTypeManager* ftManager, const char* fontFilepath, int width, int height, int fontSize);
 
-Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ftManager, const int* view_text,
-                                            int textLength, bool forPreedit);
-
-void FreeTypeManager_SetFontSize(FreeTypeManager* ftManager, int fontSize);
-
-void FreeTypeManager_SetTextureSize(FreeTypeManager* ftManager, int width, int height);
+Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ftManager, const int* text, int textLength, bool forPreedit);
 
 #endif /* CFreeTypeManager_h */

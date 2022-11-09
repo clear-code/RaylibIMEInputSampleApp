@@ -17,14 +17,12 @@
 
 #include "CFreeTypeManager.h"
 
-bool FreeTypeManager_Initialize(FreeTypeManager* ftManager, const char* fontFilepath, int width,
-                               int height, int fontSize)
+bool FreeTypeManager_Initialize(FreeTypeManager* ftManager, const char* fontFilepath, int width, int height, int fontSize)
 {
     setlocale(LC_CTYPE, "ja_JP");
 
-    FreeTypeManager_SetTextureSize(ftManager, width, height);
-    FreeTypeManager_SetFontSize(ftManager, fontSize);
-
+    ftManager->m_TextureWidth = width;
+    ftManager->m_TextureHeight = height;
     ftManager->m_FontSize = fontSize;
 
     //freetypeライブラリ初期化
@@ -34,35 +32,21 @@ bool FreeTypeManager_Initialize(FreeTypeManager* ftManager, const char* fontFile
         printf("FT_Init_FreeType failed with error: %d\n", error);
         return false;
     }
-    else
-    {
-        printf("FT_Init_FreeType success\n");
-    }
 
     //読み込んだフォントからface作成
     error = FT_New_Face(ftManager->m_ftLibrary, fontFilepath, 0, &ftManager->m_ftFace);
-
     if (error != 0)
     {
         printf("FT_New_Face failed with error: %d\n", error);
         return false;
     }
-    else
-    {
-        printf("FT_New_Face success\n");
-    }
 
     //生成するグリフ用のフォント設定
     error = FT_Set_Char_Size(ftManager->m_ftFace, 0, 16 * ftManager->m_FontSize, 300, 300);
-
     if (error != 0)
     {
         printf("FT_Set_Char_Size failed with error: %d\n", error);
         return false;
-    }
-    else
-    {
-        printf("FT_Set_Char_Size success\n");
     }
 
     unsigned int buffer_size = ftManager->m_TextureWidth * ftManager->m_TextureHeight * 4;
@@ -87,89 +71,79 @@ bool FreeTypeManager_Initialize(FreeTypeManager* ftManager, const char* fontFile
     return true;
 }
 
-Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ftManager, const int* view_text,
-                                            int textLength, bool forPreedit)
+Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ftManager, const int* text, int textLength, bool forPreedit)
 {
-    //画像データ作成用
+    // 画像データ初期化
     unsigned char* data = (unsigned char*)ftManager->m_Image.data;
     memcpy(data, ftManager->m_InitData, ftManager->m_TextureWidth * ftManager->m_TextureHeight * 4);
 
-    FT_GlyphSlot slot;
-    int startBufferIndex = 0;           //文字を書き始める
-    int writeWidthPixelNum = 0;         //現在描画完了している横幅
-    int writeHeightPixelNum = 0;
+    // 現在何行目の描画をしているか
+    int curRow = 0;
+    // 現在の横方向描画位置(ピクセル)
+    int curX = 0;
 
-    //引数の文字の分だけグリフを取得して画像バッファに書き込む
-    for (int glyfIndex = 0; glyfIndex < textLength; glyfIndex++ )
+    // 1文字ずつ画像バッファに書き込む
+    for (int glyfIndex = 0; glyfIndex < textLength; ++glyfIndex)
     {
-
-        //文字のグリフを読み込み
-        int error = FT_Load_Char(ftManager->m_ftFace, view_text[glyfIndex], FT_LOAD_RENDER);
+        // グリフを読み込み
+        int error = FT_Load_Char(ftManager->m_ftFace, text[glyfIndex], FT_LOAD_RENDER);
         if (error != 0)
         {
             printf("FT_Load_Char failed with error: %d\n", error);
             continue;
         }
-        slot = ftManager->m_ftFace->glyph;
 
+        FT_GlyphSlot slot = ftManager->m_ftFace->glyph;
 
-        //描画する一文字を表示する高さの調整
-        unsigned int hei = (ftManager->m_FontSize - slot->bitmap_top) * ftManager->m_TextureWidth * 4;
-        //文字を表示する横幅の調整
-        writeWidthPixelNum += slot->bitmap_left;
+        // 文字を表示する横幅の調整
+        curX += slot->bitmap_left;
 
-        //改行の判定
-        if (writeWidthPixelNum + slot->bitmap.width >= ftManager->m_TextureWidth)
+        // テクスチャ幅をオーバーする場合は先に改行しておく
+        if (curX + slot->bitmap.width >= ftManager->m_TextureWidth)
         {
+            curRow++;
             //描画スタート位置を次の行の先頭に
-            writeWidthPixelNum = slot->bitmap_left;
-            startBufferIndex += ftManager->m_FontSize * ftManager->m_TextureWidth * 4;
-            writeHeightPixelNum += ftManager->m_FontSize;
+            curX = slot->bitmap_left;
         }
 
-        //バッファにグリフの情報を書き込む
-        for (int i = 0, wid = 0; i < slot->bitmap.width * slot->bitmap.rows; i++, wid += 4)
+        // この文字を書き込むべきオフセット位置
+        unsigned int bufferOffset = 4 * (curX + curRow * ftManager->m_FontSize * ftManager->m_TextureWidth);
+
+        // オフセットを起点として、この文字を書き込み処理を始める高さ
+        // unsigned int glyfY = (ftManager->m_FontSize - slot->bitmap_top) * ftManager->m_TextureWidth * 4;
+        int glyfY = ftManager->m_FontSize - slot->bitmap_top;
+
+        // バッファにグリフの情報を書き込む
+        for (int i = 0, glyfX = 0; i < slot->bitmap.width * slot->bitmap.rows; ++i, ++glyfX)
         {
-            //文字の端まできたら書き込む位置を調整
-            if (wid >= (slot->bitmap.width * 4))
+            // 今の行(1文字の内部における1ピクセル行)の書き込みが終わったら、次の行へ
+            if (glyfX >= slot->bitmap.width)
             {
-                wid = 0;
-                hei = hei + ftManager->m_TextureWidth * 4;
+                glyfX = 0;
+                glyfY++;
             }
 
-            //グリフ情報を書き込み
-            unsigned char pix_color = 255 - slot->bitmap.buffer[i];
-            if (pix_color != 255)
+            // 1ピクセル書き込み
+            unsigned char pixColor = 255 - slot->bitmap.buffer[i];
+            if (pixColor != 255)
             {
-                unsigned int writeIndex = startBufferIndex + hei + wid + (writeWidthPixelNum * 4);
-                data[writeIndex] = pix_color;
-                data[writeIndex + 1] = pix_color;
-                data[writeIndex + 2] = pix_color;
+                unsigned int writeIndex = bufferOffset + 4 * (glyfX + glyfY * ftManager->m_TextureWidth);
+                data[writeIndex] = pixColor;
+                data[writeIndex + 1] = pixColor;
+                data[writeIndex + 2] = pixColor;
                 data[writeIndex + 3] = slot->bitmap.buffer[i];
             }
         }
 
-        //次の文字の書き込み位置の計算
-        writeWidthPixelNum += slot->bitmap.width;
+        // 次の文字の書き込み位置の計算
+        curX += slot->bitmap.width;
     }
 
     if (!forPreedit)
     {
-        ftManager->m_CursorPosX = writeWidthPixelNum;
-        ftManager->m_CursorPosY = writeHeightPixelNum;
+        ftManager->m_CursorPosX = curX;
+        ftManager->m_CursorPosY = curRow * ftManager->m_FontSize;
     }
 
     return LoadTextureFromImage(ftManager->m_Image);
-}
-
-void FreeTypeManager_SetFontSize(FreeTypeManager* ftManager, int fontSize)
-{
-    ftManager->m_FontSize = fontSize;
-}
-
-//テクスチャサイズ設定
-void FreeTypeManager_SetTextureSize(FreeTypeManager* ftManager, int width, int height)
-{
-    ftManager->m_TextureWidth = width;
-    ftManager->m_TextureHeight = height;
 }
