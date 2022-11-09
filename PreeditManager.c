@@ -22,15 +22,15 @@
 
 #define MAX_PREDIT_LEN 128
 
-static unsigned int s_PreeditArray[MAX_PREDIT_LEN];
-static unsigned int s_PreeditLen = 0;
+static int s_PreeditArray[MAX_PREDIT_LEN];
+static int s_PreeditLen = 0;
 
 static const int s_PreeditWindowPosXOffset = 15;
 static const int s_PreeditWindowPosYOffset = 5;
 
 static PreeditManager_OnPreeditChanged s_OnPreeditChanged;
 
-static void OnPreedit(int preeditLength, unsigned int* preeditString, int blockCount,
+static void OnPreedit(int preeditLength, int* preeditString, int blockCount,
                       int* blockSizes, int focusedBlock, int caret);
 
 void PreeditManager_Init()
@@ -48,12 +48,12 @@ void PreeditManager_SetOnPreeditChanged(PreeditManager_OnPreeditChanged onPreedi
     s_OnPreeditChanged = onPreeditChanged;
 }
 
-void PreeditManager_GetPreeditChar(unsigned int* input_text)
+void PreeditManager_GetPreeditText(int* text)
 {
-    memcpy(input_text, s_PreeditArray, sizeof(unsigned int) * s_PreeditLen);
+    memcpy(text, s_PreeditArray, sizeof(int) * s_PreeditLen);
 }
 
-static void OnPreedit(int preeditLength, unsigned int* preeditString, int blockCount,
+static void OnPreedit(int preeditLength, int* preeditString, int blockCount,
                       int* blockSizes, int focusedBlock, int caret)
 {
     int blockIndex = -1, remainingBlockSize = 0;
@@ -70,18 +70,18 @@ static void OnPreedit(int preeditLength, unsigned int* preeditString, int blockC
     for (int i = 0; i < preeditLength; i++)
     {
         if (i == caret)
-            s_PreeditArray[s_PreeditLen++] = U'|';
+            s_PreeditArray[s_PreeditLen++] = '|';
 
         if (remainingBlockSize == 0)
         {
             if (blockIndex == focusedBlock)
-                s_PreeditArray[s_PreeditLen++] = U']';
+                s_PreeditArray[s_PreeditLen++] = ']';
 
             blockIndex++;
             remainingBlockSize = blockSizes[blockIndex];
 
             if (blockIndex == focusedBlock)
-                s_PreeditArray[s_PreeditLen++] = U'[';
+                s_PreeditArray[s_PreeditLen++] = '[';
         }
 
         s_PreeditArray[s_PreeditLen++] = preeditString[i];
@@ -89,9 +89,9 @@ static void OnPreedit(int preeditLength, unsigned int* preeditString, int blockC
         remainingBlockSize--;
     }
     if (blockIndex == focusedBlock)
-        s_PreeditArray[s_PreeditLen++] = U']';
+        s_PreeditArray[s_PreeditLen++] = ']';
     if (caret == preeditLength)
-        s_PreeditArray[s_PreeditLen++] = U'|';
+        s_PreeditArray[s_PreeditLen++] = '|';
 
     if (s_OnPreeditChanged != NULL)
         s_OnPreeditChanged(s_PreeditArray, s_PreeditLen);

@@ -17,18 +17,18 @@
 
 #include "CFreeTypeManager.h"
 
-bool FreeTypeManager_Initialize(FreeTypeManager* ft_manager, const char* font_filepath, int width,
-                               int height, int font_size)
+bool FreeTypeManager_Initialize(FreeTypeManager* ftManager, const char* fontFilepath, int width,
+                               int height, int fontSize)
 {
     setlocale(LC_CTYPE, "ja_JP");
 
-    FreeTypeManager_SetTextureSize(ft_manager, width, height);
-    FreeTypeManager_SetFontSize(ft_manager, font_size);
+    FreeTypeManager_SetTextureSize(ftManager, width, height);
+    FreeTypeManager_SetFontSize(ftManager, fontSize);
 
-    ft_manager->m_FontSize = font_size;
+    ftManager->m_FontSize = fontSize;
 
     //freetypeライブラリ初期化
-    int error = FT_Init_FreeType(&ft_manager->m_ftLibrary);
+    int error = FT_Init_FreeType(&ftManager->m_ftLibrary);
     if (error != 0)
     {
         printf("FT_Init_FreeType failed with error: %d\n", error);
@@ -40,7 +40,7 @@ bool FreeTypeManager_Initialize(FreeTypeManager* ft_manager, const char* font_fi
     }
 
     //読み込んだフォントからface作成
-    error = FT_New_Face(ft_manager->m_ftLibrary, font_filepath, 0, &ft_manager->m_ftFace);
+    error = FT_New_Face(ftManager->m_ftLibrary, fontFilepath, 0, &ftManager->m_ftFace);
 
     if (error != 0)
     {
@@ -53,7 +53,7 @@ bool FreeTypeManager_Initialize(FreeTypeManager* ft_manager, const char* font_fi
     }
 
     //生成するグリフ用のフォント設定
-    error = FT_Set_Char_Size(ft_manager->m_ftFace, 0, 16 * ft_manager->m_FontSize, 300, 300);
+    error = FT_Set_Char_Size(ftManager->m_ftFace, 0, 16 * ftManager->m_FontSize, 300, 300);
 
     if (error != 0)
     {
@@ -65,70 +65,66 @@ bool FreeTypeManager_Initialize(FreeTypeManager* ft_manager, const char* font_fi
         printf("FT_Set_Char_Size success\n");
     }
 
-    unsigned int buffer_size = ft_manager->m_TextureWidth * ft_manager->m_TextureHeight * 4;
+    unsigned int buffer_size = ftManager->m_TextureWidth * ftManager->m_TextureHeight * 4;
 
     //出力画像用の設定
-    ft_manager->m_ImageConf.data = (unsigned char*)malloc(buffer_size);
-    ft_manager->m_ImageConf.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
-    ft_manager->m_ImageConf.mipmaps = 1;
-    ft_manager->m_ImageConf.width = ft_manager->m_TextureWidth;
-    ft_manager->m_ImageConf.height = ft_manager->m_TextureHeight;
+    ftManager->m_Image.data = (unsigned char*)malloc(buffer_size);
+    ftManager->m_Image.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
+    ftManager->m_Image.mipmaps = 1;
+    ftManager->m_Image.width = ftManager->m_TextureWidth;
+    ftManager->m_Image.height = ftManager->m_TextureHeight;
 
     //出力画像用のバッファの初期化
-    ft_manager->m_InitData = (unsigned char*)malloc(buffer_size);
+    ftManager->m_InitData = (unsigned char*)malloc(buffer_size);
     for (int i = 0; i < buffer_size; i += 4)
     {
-        ft_manager->m_InitData[i] = 255;
-        ft_manager->m_InitData[i + 1] = 255;
-        ft_manager->m_InitData[i + 2] = 255;
-        ft_manager->m_InitData[i + 3] = 0;
+        ftManager->m_InitData[i] = 255;
+        ftManager->m_InitData[i + 1] = 255;
+        ftManager->m_InitData[i + 2] = 255;
+        ftManager->m_InitData[i + 3] = 0;
     }
 
     return true;
 }
 
-Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const unsigned int* view_text,
-                                            unsigned int text_len, bool for_preedit)
+Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ftManager, const int* view_text,
+                                            int textLength, bool forPreedit)
 {
     //画像データ作成用
-    unsigned char* data = (unsigned char*)ft_manager->m_ImageConf.data;
-    memcpy(data, ft_manager->m_InitData, ft_manager->m_TextureWidth * ft_manager->m_TextureHeight * 4);
+    unsigned char* data = (unsigned char*)ftManager->m_Image.data;
+    memcpy(data, ftManager->m_InitData, ftManager->m_TextureWidth * ftManager->m_TextureHeight * 4);
 
-    int error;
     FT_GlyphSlot slot;
     int startBufferIndex = 0;           //文字を書き始める
     int writeWidthPixelNum = 0;         //現在描画完了している横幅
     int writeHeightPixelNum = 0;
 
     //引数の文字の分だけグリフを取得して画像バッファに書き込む
-    for (int glyfIndex = 0; glyfIndex < text_len; glyfIndex++ )
+    for (int glyfIndex = 0; glyfIndex < textLength; glyfIndex++ )
     {
 
         //文字のグリフを読み込み
-        error = FT_Load_Char(ft_manager->m_ftFace, view_text[glyfIndex], FT_LOAD_RENDER);
+        int error = FT_Load_Char(ftManager->m_ftFace, view_text[glyfIndex], FT_LOAD_RENDER);
         if (error != 0)
         {
-            //printf("%d", error);
+            printf("FT_Load_Char failed with error: %d\n", error);
+            continue;
         }
-        else
-        {
-            //printf("FT_load_Char success¥n");
-        }
-        slot = ft_manager->m_ftFace->glyph;
+        slot = ftManager->m_ftFace->glyph;
 
 
         //描画する一文字を表示する高さの調整
-        unsigned int hei = (ft_manager->m_FontSize - slot->bitmap_top) * ft_manager->m_TextureWidth * 4;
+        unsigned int hei = (ftManager->m_FontSize - slot->bitmap_top) * ftManager->m_TextureWidth * 4;
         //文字を表示する横幅の調整
         writeWidthPixelNum += slot->bitmap_left;
 
         //改行の判定
-        if (writeWidthPixelNum + slot->bitmap.width >= ft_manager->m_TextureWidth)
+        if (writeWidthPixelNum + slot->bitmap.width >= ftManager->m_TextureWidth)
         {
             //描画スタート位置を次の行の先頭に
             writeWidthPixelNum = slot->bitmap_left;
-            startBufferIndex += ft_manager->m_FontSize * ft_manager->m_TextureWidth * 4;
-            writeHeightPixelNum += ft_manager->m_FontSize;
+            startBufferIndex += ftManager->m_FontSize * ftManager->m_TextureWidth * 4;
+            writeHeightPixelNum += ftManager->m_FontSize;
         }
 
         //バッファにグリフの情報を書き込む
@@ -138,7 +134,7 @@ Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const u
             if (wid >= (slot->bitmap.width * 4))
             {
                 wid = 0;
-                hei = hei + ft_manager->m_TextureWidth * 4;
+                hei = hei + ftManager->m_TextureWidth * 4;
             }
 
             //グリフ情報を書き込み
@@ -157,23 +153,23 @@ Texture2D FreeTypeManager_OutputRaylibImage(FreeTypeManager* ft_manager, const u
         writeWidthPixelNum += slot->bitmap.width;
     }
 
-    if (!for_preedit)
+    if (!forPreedit)
     {
-        ft_manager->m_CursorPosX = writeWidthPixelNum;
-        ft_manager->m_CursorPosY = writeHeightPixelNum;
+        ftManager->m_CursorPosX = writeWidthPixelNum;
+        ftManager->m_CursorPosY = writeHeightPixelNum;
     }
 
-    return LoadTextureFromImage(ft_manager->m_ImageConf);
+    return LoadTextureFromImage(ftManager->m_Image);
 }
 
-void FreeTypeManager_SetFontSize(FreeTypeManager* ft_manager, int font_size)
+void FreeTypeManager_SetFontSize(FreeTypeManager* ftManager, int fontSize)
 {
-    ft_manager->m_FontSize = font_size;
+    ftManager->m_FontSize = fontSize;
 }
 
 //テクスチャサイズ設定
-void FreeTypeManager_SetTextureSize(FreeTypeManager* ft_manager, int width, int height)
+void FreeTypeManager_SetTextureSize(FreeTypeManager* ftManager, int width, int height)
 {
-    ft_manager->m_TextureWidth = width;
-    ft_manager->m_TextureHeight = height;
+    ftManager->m_TextureWidth = width;
+    ftManager->m_TextureHeight = height;
 }

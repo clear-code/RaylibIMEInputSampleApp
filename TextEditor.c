@@ -37,7 +37,7 @@ static Texture2D s_TexturePreedit;
 
 static bool s_NeedToUpdateTexture = false;
 
-static void OnPreeditChanged(unsigned int* preedit, unsigned int length)
+static void OnPreeditChanged(int* preedit, int length)
 {
     s_TexturePreedit = FreeTypeManager_OutputRaylibImage(&s_FtManager, preedit, length, true);
 }

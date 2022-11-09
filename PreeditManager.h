@@ -20,7 +20,7 @@
 
 #include <stdio.h>
 
-typedef void (*PreeditManager_OnPreeditChanged)(unsigned int* preedit, unsigned int length);
+typedef void (*PreeditManager_OnPreeditChanged)(int* preedit, int length);
 
 void PreeditManager_Init();
 
@@ -28,6 +28,6 @@ void PreeditManager_UpdateWindowPos(int x, int y);
 
 void PreeditManager_SetOnPreeditChanged(PreeditManager_OnPreeditChanged onPreeditChanged);
 
-void PreeditManager_GetPreeditChar(unsigned int* input_text);
+void PreeditManager_GetPreeditText(int* text);
 
 #endif /* PreeditManager_h */
