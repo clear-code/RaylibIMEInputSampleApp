@@ -51,6 +51,6 @@ typedef struct TextureManager
 
 bool TextureManager_Initialize(TextureManager* textureManager, const char* fontFilepath, int width, int height, int fontSize);
 
-Texture2D TextureManager_OutputRaylibImage(TextureManager* textureManager, const int* text, int textLength, bool forPreedit);
+Texture2D TextureManager_CreateTexture(TextureManager* textureManager, const int* text, int textLength);
 
 #endif /* TextureManager_h */

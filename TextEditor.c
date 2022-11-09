@@ -22,24 +22,28 @@
 
 #define MAX_TEXT_NUM 1024
 
+static int s_FontSize = 16;
+
 static int s_PosX;
 static int s_PosY;
 static int s_Width;
 static int s_Height;
 
-static TextureManager s_FtManager;
+static TextureManager s_TextureManagerForCommitted;
 
 static int s_TextCommitted[MAX_TEXT_NUM];
 static int s_TextCommittedNum = 0;
 
 static Texture2D s_TextureCommitted;
+
+static TextureManager s_TextureManagerForPreedit;
 static Texture2D s_TexturePreedit;
 
 static bool s_NeedToUpdateTexture = false;
 
 static void OnPreeditChanged(int* preedit, int length)
 {
-    s_TexturePreedit = TextureManager_OutputRaylibImage(&s_FtManager, preedit, length, true);
+    s_TexturePreedit = TextureManager_CreateTexture(&s_TextureManagerForPreedit, preedit, length);
 }
 
 bool TextEditor_Init(int posX, int posY, int width, int height, const char* fontFilepath)
@@ -49,17 +53,22 @@ bool TextEditor_Init(int posX, int posY, int width, int height, const char* font
     s_Width = width;
     s_Height = height;
 
-    bool has_succeeded = TextureManager_Initialize(&s_FtManager, fontFilepath, s_Width, s_Height, 16);
+    bool has_succeeded = TextureManager_Initialize(&s_TextureManagerForCommitted, fontFilepath, s_Width, s_Height, s_FontSize);
+    if (!has_succeeded) {
+        printf("Error: TextureManager failed to initialize.\n");
+        return false;
+    }
+    has_succeeded = TextureManager_Initialize(&s_TextureManagerForPreedit, fontFilepath, 400, 200, s_FontSize);
     if (!has_succeeded) {
         printf("Error: TextureManager failed to initialize.\n");
         return false;
     }
 
-    s_TextureCommitted = TextureManager_OutputRaylibImage(&s_FtManager, U"", 0, false);
-    s_TexturePreedit = TextureManager_OutputRaylibImage(&s_FtManager, U"", 0, true);
+    s_TextureCommitted = TextureManager_CreateTexture(&s_TextureManagerForCommitted, U"", 0);
+    s_TexturePreedit = TextureManager_CreateTexture(&s_TextureManagerForPreedit, U"", 0);
 
     PreeditManager_Init();
-    PreeditManager_UpdateWindowPos(s_PosX, s_PosY + s_FtManager.m_FontSize);
+    PreeditManager_UpdateWindowPos(s_PosX, s_PosY + s_FontSize);
     PreeditManager_SetOnPreeditChanged(OnPreeditChanged);
 
     return true;
@@ -90,15 +99,16 @@ void TextEditor_Draw()
 {
     if (s_NeedToUpdateTexture)
     {
-        s_TextureCommitted = TextureManager_OutputRaylibImage(&s_FtManager, s_TextCommitted,
-                                                               s_TextCommittedNum, false);
-        PreeditManager_UpdateWindowPos(s_PosX + s_FtManager.m_CursorPosX,
-                                       s_PosY + s_FtManager.m_CursorPosY + s_FtManager.m_FontSize);
+        s_TextureCommitted = TextureManager_CreateTexture(&s_TextureManagerForCommitted, s_TextCommitted, s_TextCommittedNum);
+        PreeditManager_UpdateWindowPos(s_PosX + s_TextureManagerForCommitted.m_CursorPosX,
+                                       s_PosY + s_TextureManagerForCommitted.m_CursorPosY + s_FontSize);
         s_NeedToUpdateTexture = false;
     }
 
     DrawRectangleLines(s_PosX, s_PosY, s_Width, s_Height, BLACK);
     DrawTexture(s_TextureCommitted, s_PosX, s_PosY, WHITE);
-    DrawTexture(s_TexturePreedit, s_PosX + s_FtManager.m_CursorPosX,
-                s_PosY + s_FtManager.m_CursorPosY, WHITE);
+    DrawTexture(s_TexturePreedit,
+                s_PosX + s_TextureManagerForCommitted.m_CursorPosX,
+                s_PosY + s_TextureManagerForCommitted.m_CursorPosY,
+                WHITE);
 }

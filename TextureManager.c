@@ -71,7 +71,7 @@ bool TextureManager_Initialize(TextureManager* textureManager, const char* fontF
     return true;
 }
 
-Texture2D TextureManager_OutputRaylibImage(TextureManager* textureManager, const int* text, int textLength, bool forPreedit)
+Texture2D TextureManager_CreateTexture(TextureManager* textureManager, const int* text, int textLength)
 {
     // 画像データ初期化
     unsigned char* data = (unsigned char*)textureManager->m_Image.data;
@@ -139,11 +139,8 @@ Texture2D TextureManager_OutputRaylibImage(TextureManager* textureManager, const
         curX += slot->bitmap.width;
     }
 
-    if (!forPreedit)
-    {
-        textureManager->m_CursorPosX = curX;
-        textureManager->m_CursorPosY = curRow * textureManager->m_FontSize;
-    }
+    textureManager->m_CursorPosX = curX;
+    textureManager->m_CursorPosY = curRow * textureManager->m_FontSize;
 
     return LoadTextureFromImage(textureManager->m_Image);
 }
