@@ -73,9 +73,6 @@ bool TextEditor_Init(int posX, int posY, int width, int height, const char* font
         return false;
     }
 
-    s_TextureCommitted = TextureManager_CreateTexture(&s_TextureManagerForCommitted, U"", 0);
-    s_TexturePreedit = TextureManager_CreateTexture(&s_TextureManagerForPreedit, U"", 0);
-
     PreeditManager_Init();
     PreeditManager_UpdateWindowPos(s_PosX, s_PosY + s_FontSize);
     PreeditManager_SetOnPreeditChanged(OnPreeditChanged);
