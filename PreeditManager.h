@@ -26,7 +26,7 @@ typedef void (*PreeditManager_OnPreeditChanged)(int* preedit, int length);
 
 void PreeditManager_Init();
 
-void PreeditManager_UpdateWindowPos(int x, int y);
+void PreeditManager_UpdateCursorRectangle(int x, int y, int w, int h);
 
 void PreeditManager_SetOnPreeditChanged(PreeditManager_OnPreeditChanged onPreeditChanged);
 

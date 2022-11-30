@@ -55,6 +55,13 @@ static void OnPreeditChanged(int* preedit, int length)
     s_TexturePreedit = TextureManager_CreateTexture(&s_TextureManagerForPreedit, preedit, length);
 }
 
+static int CursorHight()
+{
+    // It might be possible to get this padding from FreeType, but I don't know how.
+    const int padding = 2;
+    return s_FontSize + padding;
+}
+
 bool TextEditor_Init(int posX, int posY, int width, int height, const char* fontFilepath)
 {
     s_PosX = posX;
@@ -74,7 +81,7 @@ bool TextEditor_Init(int posX, int posY, int width, int height, const char* font
     }
 
     PreeditManager_Init();
-    PreeditManager_UpdateWindowPos(s_PosX, s_PosY + s_FontSize);
+    PreeditManager_UpdateCursorRectangle(s_PosX, s_PosY, 1, CursorHight());
     PreeditManager_SetOnPreeditChanged(OnPreeditChanged);
 
 #ifdef MANAGE_PREEDIT_CANDIDATE
@@ -116,8 +123,10 @@ void TextEditor_Draw()
     if (s_NeedToUpdateTexture)
     {
         s_TextureCommitted = TextureManager_CreateTexture(&s_TextureManagerForCommitted, s_TextCommitted, s_TextCommittedNum);
-        PreeditManager_UpdateWindowPos(s_PosX + s_TextureManagerForCommitted.m_CursorPosX,
-                                       s_PosY + s_TextureManagerForCommitted.m_CursorPosY + s_FontSize);
+        PreeditManager_UpdateCursorRectangle(s_PosX + s_TextureManagerForCommitted.m_CursorPosX,
+                                             s_PosY + s_TextureManagerForCommitted.m_CursorPosY,
+                                             1,
+                                             CursorHight());
         s_NeedToUpdateTexture = false;
     }
 

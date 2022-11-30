@@ -50,9 +50,9 @@ void PreeditManager_Init()
 #endif
 }
 
-void PreeditManager_UpdateWindowPos(int x, int y)
+void PreeditManager_UpdateCursorRectangle(int x, int y, int w, int h)
 {
-    SetPreeditWindowPosition(x + s_PreeditWindowPosXOffset, y + s_PreeditWindowPosYOffset);
+    SetPreeditCursorRectangle(x, y, w, h);
 }
 
 void PreeditManager_SetOnPreeditChanged(PreeditManager_OnPreeditChanged onPreeditChanged)

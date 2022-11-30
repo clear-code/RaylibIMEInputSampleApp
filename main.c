@@ -75,9 +75,11 @@ static bool IsTogglingFullscreen()
 
 static void DrawPreeditUtils()
 {
-    int candidateWindowPosX;
-    int candidateWindowPosY;
-    GetPreeditWindowPosition(&candidateWindowPosX, &candidateWindowPosY);
+    int cursorX;
+    int cursorY;
+    int cursorWidth;
+    int cursorHeight;
+    GetPreeditCursorRectangle(&cursorX, &cursorY, &cursorWidth, &cursorHeight);
 
     bool isImeOn = IsImeOn();
 
@@ -94,7 +96,7 @@ static void DrawPreeditUtils()
         DrawText("IME status: OFF", x, y, 20, BLACK);
     y += 22;
 
-    DrawText(TextFormat("IME candidate window pos (x, y): (%d, %d)", candidateWindowPosX, candidateWindowPosY),
+    DrawText(TextFormat("preedit cursor (x, y, w, h): (%d, %d, %d, %d)", cursorX, cursorY, cursorWidth, cursorHeight),
              x, y, 20, BLACK);
     y += 22;
 
