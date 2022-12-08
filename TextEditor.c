@@ -69,13 +69,15 @@ bool TextEditor_Init(int posX, int posY, int width, int height, const char* font
     s_Width = width;
     s_Height = height;
 
-    bool has_succeeded = TextureManager_Initialize(&s_TextureManagerForCommitted, fontFilepath, s_Width, s_Height, s_FontSize);
-    if (!has_succeeded) {
+    bool hasSucceeded = TextureManager_Initialize(&s_TextureManagerForCommitted, fontFilepath, s_Width, s_Height, s_FontSize);
+    if (!hasSucceeded)
+    {
         printf("Error: TextureManager failed to initialize.\n");
         return false;
     }
-    has_succeeded = TextureManager_Initialize(&s_TextureManagerForPreedit, fontFilepath, 400, 200, s_FontSize);
-    if (!has_succeeded) {
+    hasSucceeded = TextureManager_Initialize(&s_TextureManagerForPreedit, fontFilepath, 400, 200, s_FontSize);
+    if (!hasSucceeded)
+    {
         printf("Error: TextureManager failed to initialize.\n");
         return false;
     }
@@ -85,8 +87,9 @@ bool TextEditor_Init(int posX, int posY, int width, int height, const char* font
     PreeditManager_SetOnPreeditChanged(OnPreeditChanged);
 
 #ifdef MANAGE_PREEDIT_CANDIDATE
-    has_succeeded = TextureManager_Initialize(&s_TextureManagerForCandidate, fontFilepath, 400, 400, s_FontSize);
-    if (!has_succeeded) {
+    hasSucceeded = TextureManager_Initialize(&s_TextureManagerForCandidate, fontFilepath, 400, 400, s_FontSize);
+    if (!hasSucceeded)
+    {
         printf("Error: TextureManager failed to initialize.\n");
         return false;
     }

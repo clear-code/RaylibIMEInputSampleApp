@@ -60,7 +60,7 @@ Texture2D TextureManager_CreateTexture(TextureManager* manager, const int* text,
 
 #ifdef MANAGE_PREEDIT_CANDIDATE
     Texture2D TextureManager_CreateTextureForCandidate(TextureManager* manager, int** candidates, int* lengths,
-                                                       int page_size, int selected_index);
+                                                       int pageSize, int selectedIndex);
 #endif
 
 #endif /* TextureManager_h */

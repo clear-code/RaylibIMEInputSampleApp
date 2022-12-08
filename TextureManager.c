@@ -52,18 +52,18 @@ bool TextureManager_Initialize(TextureManager* manager, const char* fontFilepath
         return false;
     }
 
-    unsigned int buffer_size = manager->m_TextureWidth * manager->m_TextureHeight * 4;
+    unsigned int bufferSize = manager->m_TextureWidth * manager->m_TextureHeight * 4;
 
     //出力画像用の設定
-    manager->m_Image.data = (unsigned char*)malloc(buffer_size);
+    manager->m_Image.data = (unsigned char*)malloc(bufferSize);
     manager->m_Image.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;
     manager->m_Image.mipmaps = 1;
     manager->m_Image.width = manager->m_TextureWidth;
     manager->m_Image.height = manager->m_TextureHeight;
 
     //出力画像用のバッファの初期化
-    manager->m_InitData = (unsigned char*)malloc(buffer_size);
-    for (int i = 0; i < buffer_size; i += 4)
+    manager->m_InitData = (unsigned char*)malloc(bufferSize);
+    for (int i = 0; i < bufferSize; i += 4)
     {
         manager->m_InitData[i] = 255;
         manager->m_InitData[i + 1] = 255;
@@ -96,7 +96,7 @@ Texture2D TextureManager_CreateTexture(TextureManager* manager, const int* text,
 
 #ifdef MANAGE_PREEDIT_CANDIDATE
     Texture2D TextureManager_CreateTextureForCandidate(TextureManager* manager, int** candidates, int* lengths,
-                                                       int page_size, int selected_index)
+                                                       int pageSize, int selectedIndex)
     {
         // 画像データ初期化
         unsigned char* data = (unsigned char*)manager->m_Image.data;
@@ -105,9 +105,9 @@ Texture2D TextureManager_CreateTexture(TextureManager* manager, const int* text,
         manager->m_currentX = 0;
         manager->m_currentRow = 0;
 
-        for (int index = 0; index < page_size; ++index)
+        for (int index = 0; index < pageSize; ++index)
         {
-            if (index == selected_index)
+            if (index == selectedIndex)
             {
                 WriteOneChar(manager, data, '>', false);
                 WriteOneChar(manager, data, '>', false);
