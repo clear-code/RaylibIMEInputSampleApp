@@ -158,8 +158,7 @@ int main(int argc, char** argv)
 
     bool hasSucceeded = TextEditor_Init(editorMargin, editorStartY + editorMargin,
                                         s_ScreenWidth - 2 * editorMargin,
-                                        s_ScreenHeight - editorStartY - 2 * editorMargin,
-                                        FONT_FILEPATH);
+                                        s_ScreenHeight - editorStartY - 2 * editorMargin);
     if (!hasSucceeded)
     {
         printf("Error: TextEditor failed to initialize.\n");

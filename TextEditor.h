@@ -23,7 +23,7 @@
 
 #include "config.h"
 
-bool TextEditor_Init(int posX, int posY, int width, int height, const char* fontFilepath);
+bool TextEditor_Init(int posX, int posY, int width, int height);
 
 void TextEditor_Update();
 

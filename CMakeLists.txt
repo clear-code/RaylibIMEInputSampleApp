@@ -23,6 +23,7 @@ project(RaylibIMEInputSampleApp VERSION 0.1.0 LANGUAGES C)
 
 option(USE_EXTERNAL_GLFW "Use raylib built with external GLFW. GLFW package needs to be found." OFF)
 option(USE_SOFT_FULLSCREEN "Use soft-fullscreen feature of raylib." OFF)
+set(FONT_FILENAME "GenShinGothic-Regular.ttf" CACHE STRING "The filename of font to use.")
 
 if (NOT WIN32)
     find_package(raylib REQUIRED)
@@ -54,6 +55,7 @@ list(APPEND DEPENDENCIES ${RESOURCE_FILES})
 
 if (WIN32)
     message("For Windows")
+    target_compile_definitions(TextureManager PRIVATE WIN32)
 
     option(MANAGE_PREEDIT_CANDIDATE "Manage the drawing of preedit candidates by the app side." OFF)
 
@@ -102,6 +104,7 @@ if (WIN32)
     list(APPEND DEPENDENCIES ${FREETYPE_LIBRARY})
 elseif (APPLE)
     message("For MacOS")
+    target_compile_definitions(TextureManager PRIVATE APPLE)
 
     list(APPEND RAYLIBS raylib)
     if (USE_EXTERNAL_GLFW)
@@ -133,6 +136,7 @@ elseif (APPLE)
     )
 elseif (UNIX)
     message("For UNIX")
+    target_compile_definitions(TextureManager PRIVATE UNIX)
 
     list(APPEND RAYLIBS raylib)
     if (USE_EXTERNAL_GLFW)

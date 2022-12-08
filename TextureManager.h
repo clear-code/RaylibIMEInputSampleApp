@@ -54,7 +54,7 @@ typedef struct TextureManager
     int m_currentRow; // 現在の横方向描画位置(ピクセル)
 } TextureManager;
 
-bool TextureManager_Initialize(TextureManager* manager, const char* fontFilepath, int width, int height, int fontSize);
+bool TextureManager_Initialize(TextureManager* manager, int width, int height, int fontSize);
 
 Texture2D TextureManager_CreateTexture(TextureManager* manager, const int* text, int textLength);
 

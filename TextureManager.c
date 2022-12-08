@@ -17,10 +17,20 @@
 
 #include "TextureManager.h"
 
+#if defined(WIN32)
+#include <libloaderapi.h>
+#elif defined(APPLE)
+#include <mach-o/dyld.h>
+#endif
+
+#define FONT_FILEPATH_MAX_LEN 256
+#define FILEPATH_BUFFER_LEN 200 // Need to make this smaller than FONT_FILEPATH_MAX_LEN to suppress warning...
+
 static unsigned int NumOfPixelsInOneRow(TextureManager* manager);
 static void WriteOneChar(TextureManager* manager, unsigned char* data, int character, bool wordWrap);
+static char* GetFontFilepath();
 
-bool TextureManager_Initialize(TextureManager* manager, const char* fontFilepath, int width, int height, int fontSize)
+bool TextureManager_Initialize(TextureManager* manager, int width, int height, int fontSize)
 {
     setlocale(LC_CTYPE, "ja_JP");
 
@@ -36,11 +46,18 @@ bool TextureManager_Initialize(TextureManager* manager, const char* fontFilepath
         return false;
     }
 
+    const char* fontFilepath = GetFontFilepath();
+    if (!fontFilepath)
+    {
+        printf("GetFontFilepath failed\n");
+        return false;
+    }
+
     //読み込んだフォントからface作成
     error = FT_New_Face(manager->m_ftLibrary, fontFilepath, 0, &manager->m_ftFace);
     if (error != 0)
     {
-        printf("FT_New_Face failed with error: %d\n", error);
+        printf("FT_New_Face failed with error: %d, fontFilepath: %s\n", error, fontFilepath);
         return false;
     }
 
@@ -190,4 +207,93 @@ static void WriteOneChar(TextureManager* manager, unsigned char* data, int chara
 
     // 次の文字の書き込み位置の計算
     manager->m_currentX += slot->bitmap.width;
+}
+
+static char* GetFontFilepath()
+{
+#if defined(WIN32)
+    static char fontFilepath[FONT_FILEPATH_MAX_LEN];
+    static char filepathBuffer[FILEPATH_BUFFER_LEN];
+    static wchar_t filepathBufferW[FILEPATH_BUFFER_LEN];
+    static bool has_initialized = false;
+
+    if (has_initialized)
+        return fontFilepath;
+
+    DWORD size = GetModuleFileNameW(NULL, filepathBufferW, FILEPATH_BUFFER_LEN);
+    if (size < 0)
+        return NULL;
+    for (int i = size - 1; 0 <= i; --i)
+    {
+        if (filepathBufferW[i] == L'\\')
+        {
+            filepathBufferW[i] = '\0';
+            break;
+        }
+    }
+    // Can't convert paths including Japanese texts...
+    if (wcstombs(filepathBuffer, filepathBufferW, FILEPATH_BUFFER_LEN) == -1)
+        return NULL;
+    snprintf(fontFilepath, FONT_FILEPATH_MAX_LEN, "%s/%s", filepathBuffer, FONT_FILENAME);
+
+    has_initialized = true;
+    return fontFilepath;
+#elif defined(APPLE)
+    static char fontFilepath[FONT_FILEPATH_MAX_LEN];
+    static char filepathBuffer[FILEPATH_BUFFER_LEN];
+    static bool has_initialized = false;
+
+    if (has_initialized)
+        return fontFilepath;
+
+    uint32_t bufSize = FILEPATH_BUFFER_LEN;
+    if (_NSGetExecutablePath(filepathBuffer, &bufSize) != 0 || bufSize <= 0)
+        return NULL;
+
+    // RaylibIMEInputSampleApp.app/Contents/MacOS/RaylibIMEInputSampleApp
+    // RaylibIMEInputSampleApp.app/Contents/Resources/
+    int depthBacked = 0;
+    for (int i = bufSize - 1; 0 <= i; --i)
+    {
+        if (filepathBuffer[i] == '/')
+        {
+            depthBacked++;
+            if (depthBacked == 2)
+            {
+                filepathBuffer[i] = '\0';
+                break;
+            }
+        }
+    }
+    snprintf(fontFilepath, FONT_FILEPATH_MAX_LEN, "%s/Resources/%s", filepathBuffer, FONT_FILENAME);
+
+    has_initialized = true;
+    return fontFilepath;
+#elif defined(UNIX)
+    static char fontFilepath[FONT_FILEPATH_MAX_LEN];
+    static char filepathBuffer[FILEPATH_BUFFER_LEN];
+    static bool has_initialized = false;
+
+    if (has_initialized)
+        return fontFilepath;
+
+    ssize_t size = readlink("/proc/self/exe", filepathBuffer, FILEPATH_BUFFER_LEN);
+    if (size < 0)
+        return NULL;
+    for (int i = size - 1; 0 <= i; --i)
+    {
+        if (filepathBuffer[i] == '/')
+        {
+            filepathBuffer[i] = '\0';
+            break;
+        }
+    }
+    snprintf(fontFilepath, FONT_FILEPATH_MAX_LEN, "%s/%s", filepathBuffer, FONT_FILENAME);
+
+    has_initialized = true;
+    return fontFilepath;
+#else
+    printf("GetFontFilepath: Unexpected platform.\n");
+    return NULL;
+#endif
 }
