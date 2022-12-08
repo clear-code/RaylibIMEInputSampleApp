@@ -292,6 +292,8 @@ static char* GetFontFilepath()
 
     has_initialized = true;
     return fontFilepath;
-#endif
+#else
+    printf("GetFontFilepath: Unexpected platform.\n");
     return NULL;
+#endif
 }
