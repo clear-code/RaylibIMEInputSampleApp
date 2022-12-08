@@ -19,6 +19,8 @@
 
 #if defined(WIN32)
 #include <libloaderapi.h>
+#elif defined(APPLE)
+#include <mach-o/dyld.h>
 #endif
 
 #define FONT_FILEPATH_MAX_LEN 256
@@ -237,7 +239,36 @@ static char* GetFontFilepath()
     has_initialized = true;
     return fontFilepath;
 #elif defined(APPLE)
-    printf("APPLE\n");
+    static char fontFilepath[FONT_FILEPATH_MAX_LEN];
+    static char filepathBuffer[FILEPATH_BUFFER_LEN];
+    static bool has_initialized = false;
+
+    if (has_initialized)
+        return fontFilepath;
+
+    uint32_t bufSize = FILEPATH_BUFFER_LEN;
+    if (_NSGetExecutablePath(filepathBuffer, &bufSize) != 0 || bufSize <= 0)
+        return NULL;
+
+    // RaylibIMEInputSampleApp.app/Contents/MacOS/RaylibIMEInputSampleApp
+    // RaylibIMEInputSampleApp.app/Contents/Resources/
+    int depthBacked = 0;
+    for (int i = bufSize - 1; 0 <= i; --i)
+    {
+        if (filepathBuffer[i] == '/')
+        {
+            depthBacked++;
+            if (depthBacked == 2)
+            {
+                filepathBuffer[i] = '\0';
+                break;
+            }
+        }
+    }
+    snprintf(fontFilepath, FONT_FILEPATH_MAX_LEN, "%s/Resources/%s", filepathBuffer, FONT_FILENAME);
+
+    has_initialized = true;
+    return fontFilepath;
 #elif defined(UNIX)
     static char fontFilepath[FONT_FILEPATH_MAX_LEN];
     static char filepathBuffer[FILEPATH_BUFFER_LEN];
