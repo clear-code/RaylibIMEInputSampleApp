@@ -117,7 +117,6 @@ elseif (APPLE)
 
     list(APPEND LIBS
         ${RAYLIBS}
-        "-framework Carbon"
         "-framework Cocoa"
         "-framework IOKit"
         "-framework CoreFoundation"
