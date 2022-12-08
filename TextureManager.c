@@ -17,6 +17,10 @@
 
 #include "TextureManager.h"
 
+#if defined(WIN32)
+#include <libloaderapi.h>
+#endif
+
 #define FONT_FILEPATH_MAX_LEN 256
 #define FILEPATH_BUFFER_LEN 200 // Need to make this smaller than FONT_FILEPATH_MAX_LEN to suppress warning...
 
@@ -205,6 +209,36 @@ static void WriteOneChar(TextureManager* manager, unsigned char* data, int chara
 
 static char* GetFontFilepath()
 {
+#if defined(WIN32)
+    static char fontFilepath[FONT_FILEPATH_MAX_LEN];
+    static char filepathBuffer[FILEPATH_BUFFER_LEN];
+    static wchar_t filepathBufferW[FILEPATH_BUFFER_LEN];
+    static bool has_initialized = false;
+
+    if (has_initialized)
+        return fontFilepath;
+
+    DWORD size = GetModuleFileNameW(NULL, filepathBufferW, FILEPATH_BUFFER_LEN);
+    if (size < 0)
+        return NULL;
+    for (int i = size - 1; 0 <= i; --i)
+    {
+        if (filepathBufferW[i] == L'\\')
+        {
+            filepathBufferW[i] = '\0';
+            break;
+        }
+    }
+    // Can't convert paths including Japanese texts...
+    if (wcstombs(filepathBuffer, filepathBufferW, FILEPATH_BUFFER_LEN) == -1)
+        return NULL;
+    snprintf(fontFilepath, FONT_FILEPATH_MAX_LEN, "%s/%s", filepathBuffer, FONT_FILENAME);
+
+    has_initialized = true;
+    return fontFilepath;
+#elif defined(APPLE)
+    printf("APPLE\n");
+#elif defined(UNIX)
     static char fontFilepath[FONT_FILEPATH_MAX_LEN];
     static char filepathBuffer[FILEPATH_BUFFER_LEN];
     static bool has_initialized = false;
@@ -212,11 +246,6 @@ static char* GetFontFilepath()
     if (has_initialized)
         return fontFilepath;
 
-#if defined(WIN32)
-    printf("WIN32\n");
-#elif defined(APPLE)
-    printf("APPLE\n");
-#elif defined(UNIX)
     ssize_t size = readlink("/proc/self/exe", filepathBuffer, FILEPATH_BUFFER_LEN);
     if (size < 0)
         return NULL;
