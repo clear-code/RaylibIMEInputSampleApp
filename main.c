@@ -73,7 +73,7 @@ static bool IsTogglingFullscreen()
     return false;
 }
 
-static void DrawPreeditUtils()
+static void DrawUtils()
 {
     int cursorX;
     int cursorY;
@@ -189,7 +189,7 @@ int main(int argc, char** argv)
 
         ClearBackground(RAYWHITE);
 
-        DrawPreeditUtils();
+        DrawUtils();
         TextEditor_Draw();
 
         DrawFPS(700, 10);
