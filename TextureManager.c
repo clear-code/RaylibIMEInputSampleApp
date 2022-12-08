@@ -19,6 +19,7 @@
 
 #if defined(WIN32)
 #include <libloaderapi.h>
+#include <stringapiset.h>
 #elif defined(APPLE)
 #include <mach-o/dyld.h>
 #endif
@@ -231,10 +232,17 @@ static char* GetFontFilepath()
             break;
         }
     }
-    // Can't convert paths including Japanese texts...
-    if (wcstombs(filepathBuffer, filepathBufferW, FILEPATH_BUFFER_LEN) == -1)
+    int mbSize = WideCharToMultiByte(CP_ACP,
+                                     0,
+                                     filepathBufferW,
+                                     -1,
+                                     filepathBuffer,
+                                     FILEPATH_BUFFER_LEN,
+                                     NULL,
+                                     NULL);
+    if (mbSize == 0)
         return NULL;
-    snprintf(fontFilepath, FONT_FILEPATH_MAX_LEN, "%s/%s", filepathBuffer, FONT_FILENAME);
+    snprintf(fontFilepath, FONT_FILEPATH_MAX_LEN, "%s\\%s", filepathBuffer, FONT_FILENAME);
 
     has_initialized = true;
     return fontFilepath;
