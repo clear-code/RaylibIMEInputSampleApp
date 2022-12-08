@@ -156,10 +156,15 @@ int main(int argc, char** argv)
         s_ScreenHeight = GetScreenHeight();
     }
 
-    TextEditor_Init(editorMargin, editorStartY + editorMargin,
-                    s_ScreenWidth - 2 * editorMargin,
-                    s_ScreenHeight - editorStartY - 2 * editorMargin,
-                    FONT_FILEPATH);
+    bool hasSucceeded = TextEditor_Init(editorMargin, editorStartY + editorMargin,
+                                        s_ScreenWidth - 2 * editorMargin,
+                                        s_ScreenHeight - editorStartY - 2 * editorMargin,
+                                        FONT_FILEPATH);
+    if (!hasSucceeded)
+    {
+        printf("Error: TextEditor failed to initialize.\n");
+        return -1;
+    }
 
     SetTargetFPS(30); 
     //--------------------------------------------------------------------------------------
