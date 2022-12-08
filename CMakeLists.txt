@@ -100,9 +100,6 @@ if (WIN32)
     list(APPEND LIBS ${RAYLIBS} winmm)
 
     list(APPEND DEPENDENCIES ${FREETYPE_LIBRARY})
-    if (USE_EXTERNAL_GLFW)
-        list(APPEND DEPENDENCIES ${GLFW_LIBRARY})
-    endif()
 elseif (APPLE)
     message("For MacOS")
 
