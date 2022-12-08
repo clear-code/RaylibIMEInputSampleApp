@@ -17,10 +17,14 @@
 
 #include "TextureManager.h"
 
+#define FONT_FILEPATH_MAX_LEN 256
+#define FILEPATH_BUFFER_LEN 200 // Need to make this smaller than FONT_FILEPATH_MAX_LEN to suppress warning...
+
 static unsigned int NumOfPixelsInOneRow(TextureManager* manager);
 static void WriteOneChar(TextureManager* manager, unsigned char* data, int character, bool wordWrap);
+static char* GetFontFilepath();
 
-bool TextureManager_Initialize(TextureManager* manager, const char* fontFilepath, int width, int height, int fontSize)
+bool TextureManager_Initialize(TextureManager* manager, int width, int height, int fontSize)
 {
     setlocale(LC_CTYPE, "ja_JP");
 
@@ -36,11 +40,18 @@ bool TextureManager_Initialize(TextureManager* manager, const char* fontFilepath
         return false;
     }
 
+    const char* fontFilepath = GetFontFilepath();
+    if (!fontFilepath)
+    {
+        printf("GetFontFilepath failed\n");
+        return false;
+    }
+
     //読み込んだフォントからface作成
     error = FT_New_Face(manager->m_ftLibrary, fontFilepath, 0, &manager->m_ftFace);
     if (error != 0)
     {
-        printf("FT_New_Face failed with error: %d\n", error);
+        printf("FT_New_Face failed with error: %d, fontFilepath: %s\n", error, fontFilepath);
         return false;
     }
 
@@ -190,4 +201,37 @@ static void WriteOneChar(TextureManager* manager, unsigned char* data, int chara
 
     // 次の文字の書き込み位置の計算
     manager->m_currentX += slot->bitmap.width;
+}
+
+static char* GetFontFilepath()
+{
+    static char fontFilepath[FONT_FILEPATH_MAX_LEN];
+    static char filepathBuffer[FILEPATH_BUFFER_LEN];
+    static bool has_initialized = false;
+
+    if (has_initialized)
+        return fontFilepath;
+
+#if defined(WIN32)
+    printf("WIN32\n");
+#elif defined(APPLE)
+    printf("APPLE\n");
+#elif defined(UNIX)
+    ssize_t size = readlink("/proc/self/exe", filepathBuffer, FILEPATH_BUFFER_LEN);
+    if (size < 0)
+        return NULL;
+    for (int i = size - 1; 0 <= i; --i)
+    {
+        if (filepathBuffer[i] == '/')
+        {
+            filepathBuffer[i] = '\0';
+            break;
+        }
+    }
+    snprintf(fontFilepath, FONT_FILEPATH_MAX_LEN, "%s/%s", filepathBuffer, FONT_FILENAME);
+
+    has_initialized = true;
+    return fontFilepath;
+#endif
+    return NULL;
 }

@@ -1,4 +1,4 @@
 #define RESOURCE_DIR "@RESOURCE_DIR@"
-#define FONT_FILEPATH "@RESOURCE_DIR@GenShinGothic-Regular.ttf"
+#define FONT_FILENAME "@FONT_FILENAME@"
 #cmakedefine USE_SOFT_FULLSCREEN
 #cmakedefine MANAGE_PREEDIT_CANDIDATE
