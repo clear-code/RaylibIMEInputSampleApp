@@ -10,7 +10,7 @@ Intended to run on the following multiple platforms:
 
 * Windows
 * macOS
-* Ubuntu
+* GNU/Linux(X11, Wayland)
 
 Please see [wiki](https://github.com/clear-code/RaylibIMEInputSampleApp/wiki) for details.
 
