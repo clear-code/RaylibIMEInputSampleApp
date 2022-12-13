@@ -24,8 +24,8 @@
 #include <mach-o/dyld.h>
 #endif
 
-#define FONT_FILEPATH_MAX_LEN 256
-#define FILEPATH_BUFFER_LEN 200 // Need to make this smaller than FONT_FILEPATH_MAX_LEN to suppress warning...
+#define FONT_FILEPATH_MAX_LEN 550
+#define FILEPATH_BUFFER_LEN 500 // Need to make this smaller than FONT_FILEPATH_MAX_LEN to suppress warning...
 
 static unsigned int NumOfPixelsInOneRow(TextureManager* manager);
 static void WriteOneChar(TextureManager* manager, unsigned char* data, int character, bool wordWrap);
