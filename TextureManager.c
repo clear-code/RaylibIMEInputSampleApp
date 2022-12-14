@@ -216,9 +216,9 @@ static char* GetFontFilepath()
     static char fontFilepath[FONT_FILEPATH_MAX_LEN];
     static char filepathBuffer[FILEPATH_BUFFER_LEN];
     static wchar_t filepathBufferW[FILEPATH_BUFFER_LEN];
-    static bool has_initialized = false;
+    static bool hasInitialized = false;
 
-    if (has_initialized)
+    if (hasInitialized)
         return fontFilepath;
 
     DWORD size = GetModuleFileNameW(NULL, filepathBufferW, FILEPATH_BUFFER_LEN);
@@ -244,14 +244,14 @@ static char* GetFontFilepath()
         return NULL;
     snprintf(fontFilepath, FONT_FILEPATH_MAX_LEN, "%s\\%s", filepathBuffer, FONT_FILENAME);
 
-    has_initialized = true;
+    hasInitialized = true;
     return fontFilepath;
 #elif defined(APPLE)
     static char fontFilepath[FONT_FILEPATH_MAX_LEN];
     static char filepathBuffer[FILEPATH_BUFFER_LEN];
-    static bool has_initialized = false;
+    static bool hasInitialized = false;
 
-    if (has_initialized)
+    if (hasInitialized)
         return fontFilepath;
 
     uint32_t bufSize = FILEPATH_BUFFER_LEN;
@@ -275,14 +275,14 @@ static char* GetFontFilepath()
     }
     snprintf(fontFilepath, FONT_FILEPATH_MAX_LEN, "%s/Resources/%s", filepathBuffer, FONT_FILENAME);
 
-    has_initialized = true;
+    hasInitialized = true;
     return fontFilepath;
 #elif defined(UNIX)
     static char fontFilepath[FONT_FILEPATH_MAX_LEN];
     static char filepathBuffer[FILEPATH_BUFFER_LEN];
-    static bool has_initialized = false;
+    static bool hasInitialized = false;
 
-    if (has_initialized)
+    if (hasInitialized)
         return fontFilepath;
 
     ssize_t size = readlink("/proc/self/exe", filepathBuffer, FILEPATH_BUFFER_LEN);
@@ -298,7 +298,7 @@ static char* GetFontFilepath()
     }
     snprintf(fontFilepath, FONT_FILEPATH_MAX_LEN, "%s/%s", filepathBuffer, FONT_FILENAME);
 
-    has_initialized = true;
+    hasInitialized = true;
     return fontFilepath;
 #else
     printf("GetFontFilepath: Unexpected platform.\n");
