@@ -288,15 +288,21 @@ static char* GetFontFilepath()
     ssize_t size = readlink("/proc/self/exe", filepathBuffer, FILEPATH_BUFFER_LEN);
     if (size < 0)
         return NULL;
+    bool hasSlashFound = false;
     for (int i = size - 1; 0 <= i; --i)
     {
         if (filepathBuffer[i] == '/')
         {
             filepathBuffer[i] = '\0';
+            hasSlashFound = true;
             break;
         }
     }
-    snprintf(fontFilepath, FONT_FILEPATH_MAX_LEN, "%s/%s", filepathBuffer, FONT_FILENAME);
+    if (hasSlashFound)
+        snprintf(fontFilepath, FONT_FILEPATH_MAX_LEN, "%s/%s", filepathBuffer, FONT_FILENAME);
+    else
+        // Consider this as a relative path from the current dir although I don't know if this case is possible.
+        snprintf(fontFilepath, FONT_FILEPATH_MAX_LEN, "%s", FONT_FILENAME);
 
     hasInitialized = true;
     return fontFilepath;
