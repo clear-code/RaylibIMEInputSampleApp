@@ -255,8 +255,13 @@ static char* GetFontFilepath()
         return fontFilepath;
 
     uint32_t bufSize = FILEPATH_BUFFER_LEN;
-    if (_NSGetExecutablePath(filepathBuffer, &bufSize) != 0 || bufSize <= 0)
+    if (_NSGetExecutablePath(filepathBuffer, &bufSize) != 0)
         return NULL;
+    // `_NSGetExecutablePath()` sets `bufSize` only when the size is not enough
+    // and it returns `-1`. So, in this case, we have to take the actual size
+    // by ourselves.
+    // https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/dyld.3.html
+    bufSize = strnlen(filepathBuffer, FILEPATH_BUFFER_LEN);
 
     // RaylibIMEInputSampleApp.app/Contents/MacOS/RaylibIMEInputSampleApp
     // RaylibIMEInputSampleApp.app/Contents/Resources/
