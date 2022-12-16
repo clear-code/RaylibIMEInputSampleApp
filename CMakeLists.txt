@@ -18,7 +18,7 @@
 
 cmake_minimum_required(VERSION 3.0)
 
-project(RaylibIMEInputSampleApp VERSION 0.1.0 LANGUAGES C)
+project(RaylibIMEInputSampleApp VERSION 1.0.0 LANGUAGES C)
 
 
 option(USE_EXTERNAL_GLFW "Use raylib built with external GLFW. GLFW package needs to be found." OFF)
