@@ -7,6 +7,7 @@
 #   $ ./install-macos-oss-libs.sh /path/to/RaylibIMEInputSampleApp.app
 #
 # TODO:
+# * Add license files.
 # * Sign libfreetype & libpng, otherwise they don't work on Apple silicon.
 #   Currently this script supports only x86_64 which doesn't require codesign.
 # * Add install hook to CMakeLists.txt to run this script automatically.
